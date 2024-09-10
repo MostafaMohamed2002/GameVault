@@ -1,0 +1,16 @@
+package com.mostafadevo.freegames.data.remote
+
+import com.mostafadevo.freegames.data.remote.dto.GameDTO
+import com.mostafadevo.freegames.data.remote.dto.GameDetailsDTO
+import retrofit2.Response
+import retrofit2.http.GET
+import retrofit2.http.Query
+
+
+interface FreeGamesApi {
+    @GET("games/")
+    suspend fun getGames(): Response<List<GameDTO>>
+
+    @GET("game/")
+    suspend fun getGameById(@Query("id") id: Int): Response<GameDetailsDTO>
+}

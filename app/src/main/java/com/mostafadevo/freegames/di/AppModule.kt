@@ -1,0 +1,64 @@
+package com.mostafadevo.freegames.di
+
+import android.app.Application
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.mostafadevo.freegames.data.local.FreeGameDetails.FreeGameDetailsDao
+import com.mostafadevo.freegames.data.local.FreeGamesDao
+import com.mostafadevo.freegames.data.local.FreeGamesDatabase
+import com.mostafadevo.freegames.data.remote.FreeGamesApi
+import com.mostafadevo.freegames.data.repository.FreeGamesRepositoryImpl
+import com.mostafadevo.freegames.domain.repository.FreeGamesRepository
+import com.squareup.moshi.Moshi
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+    private val loggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+    private val client = OkHttpClient.Builder().apply {
+        addInterceptor(loggingInterceptor)
+    }.build()
+
+    private val moshi = Moshi.Builder() // adapter
+        .add(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
+        .build()
+    @Provides
+    fun provideFreeGamesApi(): FreeGamesApi {
+        return Retrofit.Builder()
+            .baseUrl("https://www.freetogame.com/api/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .client(client)
+            .build()
+            .create(FreeGamesApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFreeGamesDatabase(app: Application): FreeGamesDatabase {
+        return Room.databaseBuilder(
+            app,
+            FreeGamesDatabase::class.java,
+            "freegames.db"
+        ).build()
+    }
+
+    @Provides
+    fun provideFreeGamesDao(db: FreeGamesDatabase) : FreeGamesDao = db.FreegamesDao()
+
+    @Provides
+    fun provideFreeGameDetailsDao(db: FreeGamesDatabase) : FreeGameDetailsDao = db.FreeGameDetailsDao()
+
+    @Provides
+    fun provideFreeGamesRepository(api: FreeGamesApi, gamesDao: FreeGamesDao,gameDetailsDao: FreeGameDetailsDao): FreeGamesRepository = FreeGamesRepositoryImpl(api, gamesDao,gameDetailsDao)
+}
