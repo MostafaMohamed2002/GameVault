@@ -102,6 +102,9 @@ dependencies {
     ksp(libs.dagger.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+
 }
 ksp {
     arg("dagger.incremental", "true")
