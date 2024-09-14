@@ -4,7 +4,6 @@ import coil.network.HttpException
 import com.mostafadevo.freegames.data.local.FreeGameDetails.FreeGameDetailsDao
 import com.mostafadevo.freegames.data.local.FreeGamesDao
 import com.mostafadevo.freegames.data.remote.FreeGamesApi
-import com.mostafadevo.freegames.data.remote.dto.GameDetailsDTO
 import com.mostafadevo.freegames.domain.mappers.toDomain
 import com.mostafadevo.freegames.domain.mappers.toEntity
 import com.mostafadevo.freegames.domain.model.Game
@@ -92,6 +91,27 @@ class FreeGamesRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             // Handle the error and emit an error state
             emit(ResultWrapper.Error("Failed to refresh games $e"))
+        }
+    }
+
+    override suspend fun getGamesByFilters(
+        platform: String?,
+        category: String?,
+        sortBy: String?
+    ): Flow<ResultWrapper<List<Game>>> {
+        return flow {
+            emit(ResultWrapper.Loading())
+            try {
+                val games = api.getGamesByFilters(platform, category, sortBy)
+                if (games.isSuccessful) {
+                    emit(ResultWrapper.Success(games.body()!!.map { it.toEntity() }.map { it.toDomain() }))
+                }
+            } catch (e: HttpException) {
+                emit(ResultWrapper.Error(message = e.message))
+            }
+            catch (e: Exception) {
+                emit(ResultWrapper.Error(message = e.message))
+            }
         }
     }
 }

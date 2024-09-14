@@ -103,7 +103,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation("androidx.core:core-splashscreen:1.0.1")
-
+    implementation ("androidx.compose.material:material:1.7.1")
 
 }
 ksp {

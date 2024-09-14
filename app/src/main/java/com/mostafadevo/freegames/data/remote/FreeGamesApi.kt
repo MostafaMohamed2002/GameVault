@@ -13,4 +13,11 @@ interface FreeGamesApi {
 
     @GET("game/")
     suspend fun getGameById(@Query("id") id: Int): Response<GameDetailsDTO>
+
+    @GET("games/")
+    suspend fun getGamesByFilters(
+        @Query("platform") platform: String?=null,
+        @Query("category") category: String?=null,
+        @Query("sort-by") sortBy: String?=null
+    ): Response<List<GameDTO>>
 }
