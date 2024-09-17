@@ -318,6 +318,7 @@ fun FreeGamesScreen(
                             },
                             label = { Text(item) },
                             leadingIcon = {
+                                // TODO: replace with animatedvisibility
                                 if (state.sortBy == item) {
                                     Icon(
                                         imageVector = Icons.Default.Check,
@@ -357,6 +358,7 @@ fun FreeGamesScreen(
                             },
                             label = { Text(item) },
                             leadingIcon = {
+                                // TODO: replace with animatedvisibility
                                 if (state.platform == item) {
                                     Icon(
                                         imageVector = Icons.Default.Check,
