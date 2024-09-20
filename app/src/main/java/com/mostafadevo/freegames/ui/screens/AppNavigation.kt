@@ -3,31 +3,27 @@ package com.mostafadevo.freegames.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -38,11 +34,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mostafadevo.freegames.R
+import com.mostafadevo.freegames.ui.screens.deals_screen.DealsScreen
+import com.mostafadevo.freegames.ui.screens.deals_screen.DealsScreenViewModel
+import com.mostafadevo.freegames.ui.screens.deals_screen.deals_details_screen.DealsDetailsScreen
 import com.mostafadevo.freegames.ui.screens.detailes_screen.FreeGameDetailesScreen
 import com.mostafadevo.freegames.ui.screens.detailes_screen.FreeGameDetailesViewModel
 import com.mostafadevo.freegames.ui.screens.home_screen.FreeGamesScreen
 import com.mostafadevo.freegames.ui.screens.home_screen.FreeGamesScreenViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun NavHostScreen() {
@@ -67,10 +65,19 @@ fun NavHostScreen() {
             startDestination = "/free",
             modifier = Modifier
                 .padding(scaffoldPadding)
-                .consumeWindowInsets(scaffoldPadding)
+                .consumeWindowInsets(scaffoldPadding),
+            enterTransition = { slideInHorizontally { it } + fadeIn() },
+            exitTransition = { slideOutHorizontally { -it } + fadeOut() },
+            popEnterTransition = { slideInHorizontally { -it } + fadeIn() },
+            popExitTransition = { slideOutHorizontally { it } + fadeOut() },
         ) {
             composable(route = "/deals") {
                 bottomBarVisibility = true // Show bottom bar in the "deals" screen
+                val dealsScreenViewModel = hiltViewModel<DealsScreenViewModel>()
+                DealsScreen(
+                    viewModel = dealsScreenViewModel,
+                    navController = navController
+                )
             }
             composable(route = "/free") {
                 bottomBarVisibility = true // Show bottom bar in the "free" screen
@@ -91,6 +98,10 @@ fun NavHostScreen() {
                     gameId = backStackEntry.arguments?.getInt("gameId") ?: 0,
                     viewModel = freeGameDetailesViewModel,
                 )
+            }
+            composable(route="/dealsDetails/{dealId}"){
+                bottomBarVisibility = false // Hide bottom bar in the "dealsDetails" screen
+                DealsDetailsScreen(dealId = it.arguments?.getString("dealId") ?: "")
             }
         }
     }

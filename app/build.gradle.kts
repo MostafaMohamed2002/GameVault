@@ -3,7 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.devtools.ksp") //ksp
     alias(libs.plugins.compose.compiler) //compose compiler
-    id("com.google.dagger.hilt.android") // hilt
+    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.baselineprofile) // hilt
 }
 
 android {
@@ -70,11 +71,13 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.volley)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.profileinstaller)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    "baselineProfile"(project(":baselineprofile"))
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -101,6 +104,9 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation ("androidx.compose.material:material:1.7.1")

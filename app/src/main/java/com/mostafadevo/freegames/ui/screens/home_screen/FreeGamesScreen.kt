@@ -92,13 +92,13 @@ fun FreeGamesScreen(
     navController: NavController,
     freeGamesScreenViewModel: FreeGamesScreenViewModel
 ) {
-    println("freegamescreenviewmodel is ${freeGamesScreenViewModel.hashCode()}")
     val snackbarHostState = remember { SnackbarHostState() }
     val state by freeGamesScreenViewModel.uiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true //this fixes the issue of the sheet not expanding fully
+    )
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(floatingActionButton = {
@@ -126,6 +126,7 @@ fun FreeGamesScreen(
             }
         }
         if (state.isLoading) {
+            // TODO: replace with shimmer text
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth()
             )
@@ -214,7 +215,7 @@ fun FreeGamesScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             BlurredBox (
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp))
                             ) {
                                 Text(
                                     text = game.platform,
@@ -230,7 +231,7 @@ fun FreeGamesScreen(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             BlurredBox (
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp))
                             ) {
                                 Text(
                                     text = game.genre,

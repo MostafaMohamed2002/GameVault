@@ -141,7 +141,7 @@ fun FreeGameDetailesScreen(
                 ),
         ) {
             if (state.isLoading) {
-
+                // TODO: replace with shimmer text
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -301,7 +301,7 @@ fun FreeGameDetailesScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     BlurredBox(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp))
                     ) {
                         Text(
                             text = "Platform: \n${state.game.platform}",
@@ -311,7 +311,7 @@ fun FreeGameDetailesScreen(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     BlurredBox(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp))
                     ) {
                         Text(
                             text = "Genre: \n${state.game.genre}",
@@ -328,7 +328,7 @@ fun FreeGameDetailesScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     BlurredBox(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp))
                     ) {
                         Text(
                             text = "Developer: \n${state.game.developer}",
@@ -348,7 +348,7 @@ fun FreeGameDetailesScreen(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     BlurredBox(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp))
                     ) {
                         Text(
                             text = "ReleaseDate: \n${state.game.releaseDate}",

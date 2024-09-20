@@ -3,7 +3,7 @@ package com.mostafadevo.freegames.data.repository
 import coil.network.HttpException
 import com.mostafadevo.freegames.data.local.FreeGameDetails.FreeGameDetailsDao
 import com.mostafadevo.freegames.data.local.FreeGamesDao
-import com.mostafadevo.freegames.data.remote.FreeGamesApi
+import com.mostafadevo.freegames.data.remote.freetogame.FreeGamesApi
 import com.mostafadevo.freegames.domain.mappers.toDomain
 import com.mostafadevo.freegames.domain.mappers.toEntity
 import com.mostafadevo.freegames.domain.model.Game

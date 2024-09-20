@@ -1,7 +1,7 @@
-package com.mostafadevo.freegames.data.remote
+package com.mostafadevo.freegames.data.remote.freetogame
 
-import com.mostafadevo.freegames.data.remote.dto.GameDTO
-import com.mostafadevo.freegames.data.remote.dto.GameDetailsDTO
+import com.mostafadevo.freegames.data.remote.freetogame.dto.GameDTO
+import com.mostafadevo.freegames.data.remote.freetogame.dto.GameDetailsDTO
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

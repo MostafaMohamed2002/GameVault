@@ -1,8 +1,8 @@
 package com.mostafadevo.freegames.data.local.FreeGameDetails
 
 import androidx.room.TypeConverter
-import com.mostafadevo.freegames.data.remote.dto.MinimumSystemRequirements
-import com.mostafadevo.freegames.data.remote.dto.Screenshot
+import com.mostafadevo.freegames.data.remote.freetogame.dto.MinimumSystemRequirements
+import com.mostafadevo.freegames.data.remote.freetogame.dto.Screenshot
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

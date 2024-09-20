@@ -18,9 +18,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BlurredBox(modifier: Modifier = Modifier, content : @Composable () -> Unit) {
     Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .then(modifier)
+        modifier = modifier
         ,
     ) {
         Box(

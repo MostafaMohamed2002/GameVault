@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "FreeGames"
 include(":app")
+include(":baselineprofile")

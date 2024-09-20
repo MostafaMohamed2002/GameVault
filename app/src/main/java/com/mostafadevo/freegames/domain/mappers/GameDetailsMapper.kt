@@ -1,9 +1,9 @@
 package com.mostafadevo.freegames.domain.mappers
 
 import com.mostafadevo.freegames.data.local.FreeGameDetails.FreeGameDetailsEntity
-import com.mostafadevo.freegames.data.remote.dto.GameDetailsDTO
-import com.mostafadevo.freegames.data.remote.dto.MinimumSystemRequirements
-import com.mostafadevo.freegames.data.remote.dto.Screenshot
+import com.mostafadevo.freegames.data.remote.freetogame.dto.GameDetailsDTO
+import com.mostafadevo.freegames.data.remote.freetogame.dto.MinimumSystemRequirements
+import com.mostafadevo.freegames.data.remote.freetogame.dto.Screenshot
 import com.mostafadevo.freegames.domain.model.Game
 import com.mostafadevo.freegames.domain.model.GameDetails
 
@@ -54,7 +54,7 @@ fun GameDetailsDTO.toEntity() = com.mostafadevo.freegames.data.local.FreeGameDet
     freetogameProfileUrl = freetogameProfileUrl,
     genre = genre,
     minimumSystemRequirements = minimumSystemRequirements.let {
-        com.mostafadevo.freegames.data.remote.dto.MinimumSystemRequirements(
+        MinimumSystemRequirements(
             graphics = it?.graphics,
             memory = it?.memory,
             os = it?.os,

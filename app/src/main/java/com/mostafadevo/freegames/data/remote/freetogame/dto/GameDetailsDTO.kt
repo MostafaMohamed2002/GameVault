@@ -1,4 +1,4 @@
-package com.mostafadevo.freegames.data.remote.dto
+package com.mostafadevo.freegames.data.remote.freetogame.dto
 
 
 import com.squareup.moshi.Json

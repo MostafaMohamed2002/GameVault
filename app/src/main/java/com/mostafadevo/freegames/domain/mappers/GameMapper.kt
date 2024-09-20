@@ -1,7 +1,7 @@
 package com.mostafadevo.freegames.domain.mappers
 
 import com.mostafadevo.freegames.data.local.FreeGamesEntity
-import com.mostafadevo.freegames.data.remote.dto.GameDTO
+import com.mostafadevo.freegames.data.remote.freetogame.dto.GameDTO
 import com.mostafadevo.freegames.domain.model.Game
 
 fun GameDTO.toEntity(): FreeGamesEntity {
