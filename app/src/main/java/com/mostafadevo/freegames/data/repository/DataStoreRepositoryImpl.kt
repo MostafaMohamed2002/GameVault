@@ -5,8 +5,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.mostafadevo.freegames.domain.model.ThemePreference
 import com.mostafadevo.freegames.domain.repository.DataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -46,6 +48,26 @@ class DataStoreRepositoryImpl @Inject constructor(
             } else {
                 emptyList()
             }
+        }
+    }
+
+    override suspend fun saveThemePreference(themePreference: ThemePreference) {
+        dataStore.edit { preferences ->
+            preferences[intPreferencesKey("theme_preference_key")] = themePreference.ordinal
+        }
+    }
+
+    override fun getThemePreference(): Flow<ThemePreference> {
+        return dataStore.data.catch { exception ->
+            if (exception is Exception) {
+                Timber.e(exception)
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }.map { preferences ->
+            val themePreferenceOrdinal = preferences[intPreferencesKey("theme_preference_key")] ?: ThemePreference.SYSTEM.ordinal
+            ThemePreference.entries[themePreferenceOrdinal]
         }
     }
 }
