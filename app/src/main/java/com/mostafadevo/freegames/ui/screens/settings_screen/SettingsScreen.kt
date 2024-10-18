@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -11,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -29,14 +31,17 @@ fun SettingsScreen(
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     val themePreference = viewModel.themeState.collectAsStateWithLifecycle()
-    Column {
+    val dynamicTheme = viewModel.dynamicThemeState.collectAsStateWithLifecycle()
+    Column(
+        modifier = Modifier.fillMaxSize().padding(8.dp),
+    ) {
         Text(
             text = "App Settings",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(8.dp)
         )
         ThemeSwitcherWithDialog(
-            themePreference =   themePreference.value,
+            themePreference = themePreference.value,
             onLightClick = {
                 viewModel.onEvent(SettingsScreenEvent.SaveThemePreference(ThemePreference.LIGHT))
             },
@@ -45,6 +50,13 @@ fun SettingsScreen(
             },
             onSystemClick = {
                 viewModel.onEvent(SettingsScreenEvent.SaveThemePreference(ThemePreference.SYSTEM))
+            }
+        )
+        Spacer(modifier = Modifier.padding(8.dp))
+        DynamicColorsSwitcher(
+            checked = dynamicTheme.value,
+            onClick = {
+                viewModel.onEvent(SettingsScreenEvent.SaveDynamicThemePreference(!dynamicTheme.value))
             }
         )
     }
@@ -57,12 +69,11 @@ fun ThemeSwitcherWithDialog(
     onLightClick: () -> Unit = {},
     onDarkClick: () -> Unit = {},
     onSystemClick: () -> Unit = {}
-    ) {
+) {
     val isDialogOpen = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .padding(8.dp)
             .fillMaxWidth(),
     ) {
         Text(
@@ -112,5 +123,34 @@ fun LabeledRadioButton(
             onClick = onClick
         )
         Text(label)
+    }
+}
+
+@Preview
+@Composable
+fun DynamicColorsSwitcher(
+    checked: Boolean = true,
+    onClick: () -> Unit = {}
+) {
+    Card {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                "Dynamic Colors"
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Switch(
+                checked = checked,
+                onCheckedChange = {
+                    onClick()
+                }
+            )
+
+        }
     }
 }

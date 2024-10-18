@@ -8,4 +8,6 @@ interface DataStoreRepository {
     suspend fun getSearchHistory(): Flow<List<String>>
     suspend fun saveThemePreference(themePreference: ThemePreference)
     fun getThemePreference(): Flow<ThemePreference>
+    fun getDynamicThemePereference(): Flow<Boolean>
+    suspend fun saveDynamicThemePreference(dynamicTheme: Boolean)
 }

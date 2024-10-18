@@ -3,6 +3,7 @@ package com.mostafadevo.freegames.data.repository
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -68,6 +69,25 @@ class DataStoreRepositoryImpl @Inject constructor(
         }.map { preferences ->
             val themePreferenceOrdinal = preferences[intPreferencesKey("theme_preference_key")] ?: ThemePreference.SYSTEM.ordinal
             ThemePreference.entries[themePreferenceOrdinal]
+        }
+    }
+
+    override fun getDynamicThemePereference(): Flow<Boolean> {
+        return dataStore.data.catch { exception ->
+            if (exception is Exception) {
+                Timber.e(exception)
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }.map { preferences ->
+            preferences[booleanPreferencesKey("dynamic_theme_preference_key")] ?: false
+        }
+    }
+
+    override suspend fun saveDynamicThemePreference(dynamicTheme: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey("dynamic_theme_preference_key")] = dynamicTheme
         }
     }
 }

@@ -21,6 +21,11 @@ class SettingsScreenViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(),
         initialValue = ThemePreference.SYSTEM
     )
+    val dynamicThemeState : StateFlow<Boolean> = dataStoreRepository.getDynamicThemePereference().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = false
+    )
     fun onEvent(event: SettingsScreenEvent) {
         when(event) {
             is SettingsScreenEvent.SaveThemePreference -> {
@@ -28,10 +33,20 @@ class SettingsScreenViewModel @Inject constructor(
                     saveThemePreference(event.themePreference)
                 }
             }
+
+            is SettingsScreenEvent.SaveDynamicThemePreference -> {
+                viewModelScope.launch{
+                    saveDynamicThemePreference(event.dynamicTheme)
+                }
+            }
         }
     }
     suspend fun saveThemePreference(themePreference: ThemePreference) {
         dataStoreRepository.saveThemePreference(themePreference)
+    }
+
+    suspend fun saveDynamicThemePreference(isDynamic: Boolean) {
+        dataStoreRepository.saveDynamicThemePreference(isDynamic)
     }
     // TODO: clear search history
     // TODO: change search history limit

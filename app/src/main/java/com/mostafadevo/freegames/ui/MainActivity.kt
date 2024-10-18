@@ -29,13 +29,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingsViewModel = hiltViewModel<SettingsScreenViewModel>()
             val themeState = settingsViewModel.themeState.collectAsStateWithLifecycle()
+            val dynamicTheme = settingsViewModel.dynamicThemeState.collectAsStateWithLifecycle()
             AppTheme(
                 darkTheme = when(themeState.value){
                     ThemePreference.LIGHT -> false
                     ThemePreference.DARK -> true
                     ThemePreference.SYSTEM -> isSystemInDarkTheme()
                 },
-                dynamicColor = false
+                dynamicColor = dynamicTheme.value
             ) {
                 NavHostScreen()
             }
