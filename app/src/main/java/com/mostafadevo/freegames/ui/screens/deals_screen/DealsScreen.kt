@@ -286,10 +286,10 @@ fun DealScreenContent(
                 AsyncImage(
                     model = deal.thumb,
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillWidth,
                     modifier = Modifier
                         .padding(8.dp)
-                        .size(100.dp, 100.dp)
+                        .size(150.dp, 100.dp)
                         .clip(RoundedCornerShape(8.dp)),
                 )
                 Column(
