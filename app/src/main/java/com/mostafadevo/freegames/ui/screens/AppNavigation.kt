@@ -1,6 +1,7 @@
 package com.mostafadevo.freegames.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
@@ -41,6 +43,7 @@ import com.mostafadevo.freegames.ui.screens.detailes_screen.FreeGameDetailesScre
 import com.mostafadevo.freegames.ui.screens.detailes_screen.FreeGameDetailesViewModel
 import com.mostafadevo.freegames.ui.screens.home_screen.FreeGamesScreen
 import com.mostafadevo.freegames.ui.screens.home_screen.FreeGamesScreenViewModel
+import com.mostafadevo.freegames.ui.screens.settings_screen.SettingsScreen
 
 @Composable
 fun NavHostScreen() {
@@ -82,7 +85,10 @@ fun NavHostScreen() {
             composable(route = "/free") {
                 bottomBarVisibility = true // Show bottom bar in the "free" screen
                 val freeGamesScreenViewModel = hiltViewModel<FreeGamesScreenViewModel>()
-                FreeGamesScreen(navController = navController, freeGamesScreenViewModel = freeGamesScreenViewModel)
+                FreeGamesScreen(
+                    navController = navController,
+                    freeGamesScreenViewModel = freeGamesScreenViewModel
+                )
             }
             composable(route = "/fav") {
                 bottomBarVisibility = true // Show bottom bar in the "fav" screen
@@ -99,9 +105,13 @@ fun NavHostScreen() {
                     viewModel = freeGameDetailesViewModel,
                 )
             }
-            composable(route="/dealsDetails/{dealId}"){
+            composable(route = "/dealsDetails/{dealId}") {
                 bottomBarVisibility = false // Hide bottom bar in the "dealsDetails" screen
                 DealsDetailsScreen(dealId = it.arguments?.getString("dealId") ?: "")
+            }
+            composable(route = "/settings") {
+                bottomBarVisibility = true
+                SettingsScreen()
             }
         }
     }
@@ -110,9 +120,34 @@ fun NavHostScreen() {
 @Composable
 fun NavigationBottomBar(navController: NavController) {
     val items = listOf(
-        NavItem("/free", "Free", icon = { Icon(painter = painterResource(R.drawable.game2_o_svgrepo_com), contentDescription = null, modifier = Modifier.size(24.dp)) }),
-        NavItem("/deals", "Deals", icon = { Icon(painter = painterResource(R.drawable.gift_svgrepo_com), contentDescription = null, modifier = Modifier.size(24.dp)) }),
-        NavItem("/fav", "Favourite", icon = { Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null) })
+        NavItem(
+            "/free",
+            "Free",
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.game2_o_svgrepo_com),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }),
+        NavItem(
+            "/deals",
+            "Deals",
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.gift_svgrepo_com),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }),
+        NavItem(
+            "/fav",
+            "Favourite",
+            icon = { Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null) }),
+        NavItem(
+            "/settings",
+            "Settings",
+            icon = { Icon(imageVector = Icons.Default.Settings, contentDescription = null) })
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -120,6 +155,9 @@ fun NavigationBottomBar(navController: NavController) {
 
     BottomAppBar {
         items.forEach { item ->
+            val animatedWeight by animateFloatAsState(
+                targetValue = if (currentRoute == item.route) 1.5f else 1f
+            )
             NavigationBarItem(
                 selected = currentRoute == item.route,
                 onClick = {
@@ -138,6 +176,7 @@ fun NavigationBottomBar(navController: NavController) {
                     Text(item.title)
                 },
                 alwaysShowLabel = true,
+                modifier = Modifier.weight(animatedWeight)
             )
         }
     }

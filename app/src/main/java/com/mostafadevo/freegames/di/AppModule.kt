@@ -99,5 +99,6 @@ object AppModule {
         CheapSharkRepositoryImpl(api)
 
     @Provides
+    @Singleton
     fun provideDataStoreRepository(context: Context): DataStoreRepository = DataStoreRepositoryImpl(context)
 }

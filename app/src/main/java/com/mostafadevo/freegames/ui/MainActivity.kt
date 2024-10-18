@@ -7,12 +7,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mostafadevo.freegames.domain.model.ThemePreference
 import com.mostafadevo.freegames.ui.theme.AppTheme
 import com.mostafadevo.freegames.ui.screens.NavHostScreen
+import com.mostafadevo.freegames.ui.screens.settings_screen.SettingsScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,8 +27,14 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
+            val settingsViewModel = hiltViewModel<SettingsScreenViewModel>()
+            val themeState = settingsViewModel.themeState.collectAsStateWithLifecycle()
             AppTheme(
-                darkTheme = true,
+                darkTheme = when(themeState.value){
+                    ThemePreference.LIGHT -> false
+                    ThemePreference.DARK -> true
+                    ThemePreference.SYSTEM -> isSystemInDarkTheme()
+                },
                 dynamicColor = false
             ) {
                 NavHostScreen()
