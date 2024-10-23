@@ -1,6 +1,10 @@
 package com.mostafadevo.freegames.ui.theme
 import android.os.Build
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.Colors
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
@@ -266,11 +270,41 @@ fun AppTheme(
 
       darkTheme -> darkScheme
       else -> lightScheme
-  }
+  }.switch()
 
   MaterialTheme(
-    colorScheme = colorScheme,
+    colorScheme = colorScheme.switch(),
     typography = AppTypography,
     content = content
   )
 }
+
+
+
+@Composable
+private fun animateColor(targetValue: Color) =
+    animateColorAsState(
+        targetValue = targetValue,
+        animationSpec = tween(durationMillis = 500),
+        label = "animateColorScheme"
+    ).value
+
+@Composable
+fun ColorScheme.switch() = copy(
+    primary = animateColor(primary),
+    secondary = animateColor(secondary),
+    background = animateColor(background),
+    surface = animateColor(surface),
+    error = animateColor(error),
+    onPrimary = animateColor(onPrimary),
+    onSecondary = animateColor(onSecondary),
+    onBackground = animateColor(onBackground),
+    onSurface = animateColor(onSurface),
+    onError = animateColor(onError),
+    primaryContainer = animateColor(primaryContainer),
+    secondaryContainer = animateColor(secondaryContainer),
+    tertiary = animateColor(tertiary),
+    onTertiary = animateColor(onTertiary),
+    tertiaryContainer = animateColor(tertiaryContainer),
+    onTertiaryContainer = animateColor(onTertiaryContainer),
+)
