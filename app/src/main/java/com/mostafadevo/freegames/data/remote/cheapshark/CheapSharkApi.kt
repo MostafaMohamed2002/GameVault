@@ -11,6 +11,9 @@ interface CheapSharkApi {
     @GET("deals")
     suspend fun getDeal(
         @Query("title") title:String?=null,
+        @Query("sortBy") sortBy:String="DealRating",
+        @Query("desc") desc:Int =1,
+        @Query("onSale") onSale:Int =1,
     ):Response<List<DealsDTOItem>>
 
     @GET("deals")

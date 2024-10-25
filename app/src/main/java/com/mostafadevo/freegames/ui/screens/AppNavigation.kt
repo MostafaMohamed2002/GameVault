@@ -38,7 +38,6 @@ import androidx.navigation.navArgument
 import com.mostafadevo.freegames.R
 import com.mostafadevo.freegames.ui.screens.deals_screen.DealsScreen
 import com.mostafadevo.freegames.ui.screens.deals_screen.DealsScreenViewModel
-import com.mostafadevo.freegames.ui.screens.deals_screen.deals_details_screen.DealsDetailsScreen
 import com.mostafadevo.freegames.ui.screens.detailes_screen.FreeGameDetailesScreen
 import com.mostafadevo.freegames.ui.screens.detailes_screen.FreeGameDetailesViewModel
 import com.mostafadevo.freegames.ui.screens.home_screen.FreeGamesScreen
@@ -104,10 +103,6 @@ fun NavHostScreen() {
                     gameId = backStackEntry.arguments?.getInt("gameId") ?: 0,
                     viewModel = freeGameDetailesViewModel,
                 )
-            }
-            composable(route = "/dealsDetails/{dealId}") {
-                bottomBarVisibility = false // Hide bottom bar in the "dealsDetails" screen
-                DealsDetailsScreen(dealId = it.arguments?.getString("dealId") ?: "")
             }
             composable(route = "/settings") {
                 bottomBarVisibility = true
@@ -182,4 +177,5 @@ fun NavigationBottomBar(navController: NavController) {
     }
 }
 
+// TODO: add selected icon
 data class NavItem(val route: String, val title: String, val icon: @Composable () -> Unit)
