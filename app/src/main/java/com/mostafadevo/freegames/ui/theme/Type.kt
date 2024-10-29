@@ -2,9 +2,8 @@ package com.mostafadevo.freegames.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.FontFamily
-
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import com.mostafadevo.freegames.R
 
 val provider = GoogleFont.Provider(
@@ -16,14 +15,14 @@ val provider = GoogleFont.Provider(
 val bodyFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Fira Code"),
-        fontProvider = provider,
+        fontProvider = provider
     )
 )
 
 val displayFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Kode Mono"),
-        fontProvider = provider,
+        fontProvider = provider
     )
 )
 
@@ -45,5 +44,5 @@ val AppTypography = Typography(
     bodySmall = baseline.bodySmall.copy(fontFamily = bodyFontFamily),
     labelLarge = baseline.labelLarge.copy(fontFamily = bodyFontFamily),
     labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
-    labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
+    labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily)
 )

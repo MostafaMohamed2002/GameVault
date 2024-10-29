@@ -2,7 +2,6 @@ package com.mostafadevo.freegames.data.local.FreeGameDetails
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.mostafadevo.freegames.data.remote.freetogame.dto.MinimumSystemRequirements
 import com.mostafadevo.freegames.data.remote.freetogame.dto.Screenshot
@@ -24,6 +23,5 @@ data class FreeGameDetailsEntity(
     val screenshots: List<Screenshot>,
     val shortDescription: String,
     val thumbnail: String
-){
-
+) {
 }

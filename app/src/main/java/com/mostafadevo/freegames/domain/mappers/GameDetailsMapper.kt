@@ -4,7 +4,6 @@ import com.mostafadevo.freegames.data.local.FreeGameDetails.FreeGameDetailsEntit
 import com.mostafadevo.freegames.data.remote.freetogame.dto.GameDetailsDTO
 import com.mostafadevo.freegames.data.remote.freetogame.dto.MinimumSystemRequirements
 import com.mostafadevo.freegames.data.remote.freetogame.dto.Screenshot
-import com.mostafadevo.freegames.domain.model.Game
 import com.mostafadevo.freegames.domain.model.GameDetails
 
 fun GameDetailsDTO.toDomain() = GameDetails(
@@ -31,7 +30,7 @@ fun GameDetailsDTO.toDomain() = GameDetails(
     thumbnail = thumbnail
 )
 
-fun MinimumSystemRequirements.toDomain():com.mostafadevo.freegames.domain.model.MinimumSystemRequirements{
+fun MinimumSystemRequirements.toDomain(): com.mostafadevo.freegames.domain.model.MinimumSystemRequirements {
     return com.mostafadevo.freegames.domain.model.MinimumSystemRequirements(
         graphics = graphics,
         memory = memory,
@@ -41,7 +40,7 @@ fun MinimumSystemRequirements.toDomain():com.mostafadevo.freegames.domain.model.
     )
 }
 
-fun Screenshot.toDomain():com.mostafadevo.freegames.domain.model.Screenshot{
+fun Screenshot.toDomain(): com.mostafadevo.freegames.domain.model.Screenshot {
     return com.mostafadevo.freegames.domain.model.Screenshot(
         image = image
     )

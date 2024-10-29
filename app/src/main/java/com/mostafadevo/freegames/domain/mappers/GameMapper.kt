@@ -25,7 +25,7 @@ fun GameDTO.toDomain(): Game {
     )
 }
 
-fun FreeGamesEntity.toDomain(): Game{
+fun FreeGamesEntity.toDomain(): Game {
     return Game(
         genre = genre,
         id = id,

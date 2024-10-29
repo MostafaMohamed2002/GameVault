@@ -6,7 +6,6 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-
 interface FreeGamesApi {
     @GET("games/")
     suspend fun getGames(): Response<List<GameDTO>>
@@ -16,8 +15,8 @@ interface FreeGamesApi {
 
     @GET("games/")
     suspend fun getGamesByFilters(
-        @Query("platform") platform: String?=null,
-        @Query("category") category: String?=null,
-        @Query("sort-by") sortBy: String?=null
+        @Query("platform") platform: String? = null,
+        @Query("category") category: String? = null,
+        @Query("sort-by") sortBy: String? = null
     ): Response<List<GameDTO>>
 }

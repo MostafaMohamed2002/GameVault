@@ -1,10 +1,13 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.google.devtools.ksp") //ksp
-    alias(libs.plugins.compose.compiler) //compose compiler
+    id("com.google.devtools.ksp") // ksp
+    alias(libs.plugins.compose.compiler) // compose compiler
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.baselineprofile) // hilt
+    id("org.jlleitschuh.gradle.ktlint") // ktlint
 }
 
 android {
@@ -52,6 +55,15 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    ktlint {
+        android = true
+        ignoreFailures = false
+        reporters {
+            reporter(ReporterType.PLAIN)
+            reporter(ReporterType.CHECKSTYLE)
+            reporter(ReporterType.HTML)
+        }
+    }
 }
 
 dependencies {
@@ -81,36 +93,35 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //timber
-    implementation ("com.jakewharton.timber:timber:5.0.1")
+    // timber
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
-    //kotlin coroutines
+    // kotlin coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.viewmodel)
 
-    //room db
+    // room db
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.room.compiler)
     implementation(libs.androidx.room.ktx)
 
-    //retrofit
-    implementation (libs.retrofit)
+    // retrofit
+    implementation(libs.retrofit)
     implementation(libs.moshi.kotlin)
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin.codegen)
-    implementation (libs.logging.interceptor)
+    implementation(libs.logging.interceptor)
 
-    //hilt
+    // hilt
     implementation(libs.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    //datastore
+    // datastore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation ("androidx.compose.material:material:1.7.1")
-
+    implementation("androidx.compose.material:material:1.7.4")
 }
 ksp {
     arg("dagger.incremental", "true")

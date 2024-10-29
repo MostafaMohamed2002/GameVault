@@ -1,6 +1,5 @@
 package com.mostafadevo.freegames.data.remote.cheapshark.dto
 
-
 import com.squareup.moshi.Json
 
 data class DealsDTOItem(

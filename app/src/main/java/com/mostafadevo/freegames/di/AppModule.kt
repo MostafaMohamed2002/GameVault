@@ -2,32 +2,32 @@ package com.mostafadevo.freegames.di
 
 import android.app.Application
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import com.mostafadevo.freegames.data.local.FreeGameDetails.FreeGameDetailsDao
 import com.mostafadevo.freegames.data.local.FreeGamesDao
 import com.mostafadevo.freegames.data.local.FreeGamesDatabase
 import com.mostafadevo.freegames.data.remote.cheapshark.CheapSharkApi
 import com.mostafadevo.freegames.data.remote.freetogame.FreeGamesApi
+import com.mostafadevo.freegames.data.remote.gamepower.GamePowerApi
 import com.mostafadevo.freegames.data.repository.CheapSharkRepositoryImpl
 import com.mostafadevo.freegames.data.repository.DataStoreRepositoryImpl
 import com.mostafadevo.freegames.data.repository.FreeGamesRepositoryImpl
+import com.mostafadevo.freegames.data.repository.GamePowerRepositoryImpl
 import com.mostafadevo.freegames.domain.repository.CheapSharkRepository
 import com.mostafadevo.freegames.domain.repository.DataStoreRepository
 import com.mostafadevo.freegames.domain.repository.FreeGamesRepository
+import com.mostafadevo.freegames.domain.repository.GamePowerRepository
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -59,7 +59,6 @@ object AppModule {
             .create(FreeGamesApi::class.java)
     }
 
-
     @Provides
     fun provideCheapSharkApi(): CheapSharkApi {
         return Retrofit.Builder()
@@ -68,6 +67,16 @@ object AppModule {
             .client(client)
             .build()
             .create(CheapSharkApi::class.java)
+    }
+
+    @Provides
+    fun provideGamePowerApi(): GamePowerApi {
+        return Retrofit.Builder()
+            .baseUrl("https://www.gamerpower.com/api/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .client(client)
+            .build()
+            .create(GamePowerApi::class.java)
     }
 
     @Provides
@@ -99,6 +108,12 @@ object AppModule {
         CheapSharkRepositoryImpl(api)
 
     @Provides
+    fun provideGamePowerRepository(api: GamePowerApi): GamePowerRepository =
+        GamePowerRepositoryImpl(api)
+
+    @Provides
     @Singleton
-    fun provideDataStoreRepository(context: Context): DataStoreRepository = DataStoreRepositoryImpl(context)
+    fun provideDataStoreRepository(context: Context): DataStoreRepository = DataStoreRepositoryImpl(
+        context
+    )
 }
