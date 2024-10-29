@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.ColorUtils
-import coil.Coil
 import coil.imageLoader
 import coil.request.ImageRequest
 
@@ -38,8 +37,13 @@ fun getAverageColor(imageUrl: String): Color {
         // Retrieve the pixels from the compatible Bitmap
         val pixels = IntArray(compatibleBitmap.width * compatibleBitmap.height)
         compatibleBitmap.getPixels(
-            pixels, 0, compatibleBitmap.width, 0, 0,
-            compatibleBitmap.width, compatibleBitmap.height
+            pixels,
+            0,
+            compatibleBitmap.width,
+            0,
+            0,
+            compatibleBitmap.width,
+            compatibleBitmap.height
         )
 
         var redSum = 0
@@ -77,7 +81,8 @@ fun getAverageColor(imageUrl: String): Color {
     val darkerColor = ColorUtils.HSLToColor(
         floatArrayOf(
             hsl[0],
-            hsl[1], darkerLightness
+            hsl[1],
+            darkerLightness
         )
     )
 

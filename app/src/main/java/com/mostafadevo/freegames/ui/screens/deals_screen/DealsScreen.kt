@@ -1,17 +1,14 @@
 package com.mostafadevo.freegames.ui.screens.deals_screen
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.util.LruCache
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,25 +21,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Chip
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SegmentedButton
@@ -50,122 +51,126 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import com.mostafadevo.freegames.data.remote.cheapshark.dto.DealsDTOItem
-import com.mostafadevo.freegames.ui.components.BlurredBox
 import com.mostafadevo.freegames.ui.components.DealsListItem
+import com.mostafadevo.freegames.ui.components.FilterIcon
+import com.mostafadevo.freegames.ui.components.GiveawayListItem
 import com.mostafadevo.freegames.ui.components.History
-import com.mostafadevo.freegames.ui.screens.deals_screen.search_bar.SearchBarUiEvent
-import com.mostafadevo.freegames.utils.extractDominantColor
-import com.mostafadevo.freegames.utils.loadImage
-import kotlin.math.roundToInt
+import com.mostafadevo.freegames.utils.openUrl
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalLayoutApi::class,
+    ExperimentalMaterialApi::class
 )
 @Composable
 fun DealsScreen(
-    viewModel: DealsScreenViewModel,
+    viewModel: DealsAndGiveawayScreenViewModel,
     navController: NavHostController
 ) {
-    val searchBarUiState = viewModel.searchBarUiState.collectAsStateWithLifecycle().value
-    val dealsScreenUiState = viewModel.dealsScreenUiState.collectAsStateWithLifecycle().value
+    val state = viewModel.dealsAndGiveawayScreenUiState.collectAsStateWithLifecycle().value
     val snackbarHostState = remember { SnackbarHostState() }
-    var selectedIndex by remember { mutableStateOf(0) }
     val options = listOf("Deals \uD83E\uDD1D", "Giveaways \uD83C\uDF89")
+    val context = LocalContext.current
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    val window = (LocalContext.current as Activity).window
-    SideEffect {
-        window.statusBarColor = Color.Red.toArgb()
-    }
-    LaunchedEffect(searchBarUiState.SearchBarText) {
-        if (searchBarUiState.SearchBarText.isEmpty() && searchBarUiState.deals?.isNotEmpty() == true) {
-            viewModel.onEvent(SearchBarUiEvent.clearDeals)
+    LaunchedEffect(state.dealsSearchBarText) {
+        if (state.dealsSearchBarText.isEmpty() && state.dealsSearchBardata?.isNotEmpty() == true) {
+            viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnClearSearchBarDeals) // clear list of deals inside search bar
         }
     }
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            AnimatedVisibility(
-                visible = searchBarUiState.isSearchBarActive.not(),
-                enter = slideInVertically(initialOffsetY = { -it }),
-                exit = slideOutVertically(targetOffsetY = { -it })
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
+        AnimatedVisibility(
+            visible = state.isDealsSearchBarActive.not(),
+            enter = scaleIn(transformOrigin = TransformOrigin.Center),
+            exit = scaleOut(transformOrigin = TransformOrigin.Center)
+        ) {
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp)
             ) {
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, end = 8.dp),
-                ) {
-                    options.forEachIndexed { index, label ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = options.size
-                            ),
-                            onClick = { selectedIndex = index },
-                            selected = index == selectedIndex
-                        ) {
-                            Text(label)
-                        }
+                options.forEachIndexed { index, label ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = options.size
+                        ),
+                        onClick = {
+                            viewModel.onEvent(DealsAndGiveawayScreenUiEvent.onTabSelected(index))
+                        },
+                        selected = index == state.selectedTab
+                    ) {
+                        Text(label)
                     }
                 }
             }
-
         }
-    ) { innerpadding ->
-        //deals content
+    }, floatingActionButton = {
+            AnimatedVisibility(
+                state.selectedTab == 0 && state.isDealsSearchBarActive.not(),
+                enter = scaleIn(transformOrigin = TransformOrigin.Center),
+                exit = scaleOut(transformOrigin = TransformOrigin.Center)
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnToggleBottomSheet(true))
+                    }
+                ) {
+                    Icon(
+                        imageVector = FilterIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+        }) { innerpadding ->
+        // deals content
         LaunchedEffect(true) {
             viewModel.uiEffect.collect {
                 when (it) {
-                    is DealsScreenUiEffect.ShowSnackBar -> {
-                        //show snackbar
+                    is DealsAndGiveawayScreenUiEffect.ShowSnackBar -> {
+                        // show snackbar
                         snackbarHostState.showSnackbar(it.message)
                     }
                 }
             }
         }
-        //animateddpasstate padding search bar
+        // animateddpasstate padding search bar
         val searchbarPaddingAnimation = animateDpAsState(
-            targetValue = 8.dp,
+            targetValue = 8.dp
         )
-
 
         // offers screen content
         // deals screen
         AnimatedVisibility(
             modifier = Modifier.padding(innerpadding),
-            visible = selectedIndex == 0,
-            enter = fadeIn(
-                initialAlpha = 0.3f
-            ),
-            exit = fadeOut(
-                targetAlpha = 0.3f
-            )
+            visible = state.selectedTab == 0,
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it })
         ) {
-            if (dealsScreenUiState.isLoading) {
+            if (state.isDealsLoading) {
                 // TODO: replace with shimmer
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -173,11 +178,9 @@ fun DealsScreen(
                 ) {
                     CircularProgressIndicator()
                 }
-
             }
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
 
             ) {
                 SearchBar(
@@ -190,38 +193,40 @@ fun DealsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            if (searchBarUiState.isSearchBarActive) 0.dp else searchbarPaddingAnimation.value,
+                            if (state.isDealsSearchBarActive) 0.dp else searchbarPaddingAnimation.value
                         ),
-                    query = searchBarUiState.SearchBarText,
-                    onQueryChange = {
-                        viewModel.onEvent(SearchBarUiEvent.onSearchBarTextChange(it))
-                    },
-                    onSearch = { searchQuery ->
+                    query = state.dealsSearchBarText, onQueryChange = {
+                        viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnSearchBarTextChanged(it))
+                    }, onSearch = { searchQuery ->
                         searchQuery.let {
-                            viewModel.onEvent(SearchBarUiEvent.onSearch)
+                            viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnSearchBarTextSubmit(it))
+                            // hide keyboard
+                            keyboardController?.hide()
                         }
-                    },
-                    active = searchBarUiState.isSearchBarActive,
-                    onActiveChange = {
-                        viewModel.onEvent(SearchBarUiEvent.onSearchBarActive(it))
-                    },
-                    leadingIcon = {
+                    }, active = state.isDealsSearchBarActive, onActiveChange = {
+                        viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnToggleSearchBar(it))
+                    }, leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Favorite"
                         )
-                    },
-                    trailingIcon = {
-                        if (searchBarUiState.isSearchBarActive) {
-                            IconButton(
-                                onClick = {
-                                    if (searchBarUiState.SearchBarText.isNotEmpty()) {
-                                        viewModel.onEvent(SearchBarUiEvent.onSearchBarTextChange(""))
-                                    } else {
-                                        viewModel.onEvent(SearchBarUiEvent.onSearchBarActive(false))
-                                    }
+                    }, trailingIcon = {
+                        if (state.isDealsSearchBarActive) {
+                            IconButton(onClick = {
+                                if (state.dealsSearchBarText.isNotEmpty()) {
+                                    viewModel.onEvent(
+                                        DealsAndGiveawayScreenUiEvent.OnSearchBarTextChanged(
+                                            ""
+                                        )
+                                    )
+                                } else {
+                                    viewModel.onEvent(
+                                        DealsAndGiveawayScreenUiEvent.OnToggleSearchBar(
+                                            false
+                                        )
+                                    )
                                 }
-                            ) {
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = "Close"
@@ -230,8 +235,9 @@ fun DealsScreen(
                         }
                     }
                 ) {
+                    // TODO:change the status bar color to be surface container color
                     // Search bar content
-                    if (searchBarUiState.SearchBarText.isEmpty() || searchBarUiState.SearchBarText.isBlank()) {
+                    if (state.dealsSearchBarText.isEmpty() || state.dealsSearchBarText.isBlank()) {
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -240,21 +246,19 @@ fun DealsScreen(
                             contentPadding = PaddingValues(8.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-
-
                             item {
                                 Text(
                                     text = "Recent Searches",
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
-                            items(searchBarUiState.searchHistory ?: emptyList()) { deal ->
+                            items(state.dealsSearchHistory ?: emptyList()) { deal ->
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
                                             viewModel.onEvent(
-                                                SearchBarUiEvent.onSearchBarTextChange(
+                                                DealsAndGiveawayScreenUiEvent.OnSearchBarTextChanged(
                                                     deal
                                                 )
                                             )
@@ -267,37 +271,57 @@ fun DealsScreen(
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
-                                        text = deal,
+                                        text = deal
                                     )
                                 }
-
                             }
                         }
-
                     }
 
-                    if (searchBarUiState.isLoading) {
+                    if (state.isDealsSearchBarLoading) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator()
                         }
-
                     }
-                    searchBarUiState.deals?.let {
+                    state.dealsSearchBardata?.let {
+                        LazyColumn {
+                            items(it, key = { it.dealID }) { deal ->
+                                DealsListItem(
+                                    modifier = Modifier.animateItem(),
+                                    onClickListener = {
+                                        openUrl(
+                                            context,
+                                            "https://www.cheapshark.com/redirect?dealID=${deal.dealID}"
+                                        )
+                                    },
+                                    imageLink = deal.thumb,
+                                    string1 = deal.title,
+                                    string2 = deal.salePrice + "$",
+                                    string3LineThrough = "${deal.normalPrice}$",
+                                    string4 = "${deal.savings}% off"
+                                )
+                            }
+                        }
                     }
                 }
                 LazyColumn {
-                    items(dealsScreenUiState.deals!!, key = { it.dealID }) { deal ->
+                    items(state.deals!!, key = { it.dealID }) { deal ->
                         DealsListItem(
                             modifier = Modifier.animateItem(),
-                            onClickListener = {},
+                            onClickListener = {
+                                openUrl(
+                                    context,
+                                    "https://www.cheapshark.com/redirect?dealID=${deal.dealID}"
+                                )
+                            },
                             imageLink = deal.thumb,
                             string1 = deal.title,
                             string2 = deal.salePrice + "$",
                             string3LineThrough = "${deal.normalPrice}$",
-                            string4 = "${deal.savings}% off",
+                            string4 = "${deal.savings}% off"
                         )
                     }
                 }
@@ -307,19 +331,312 @@ fun DealsScreen(
         // giveaways screen
         AnimatedVisibility(
             modifier = Modifier.padding(innerpadding),
-            visible = selectedIndex == 1,
-            enter = fadeIn(
-                initialAlpha = 0.3f
-            ),
-            exit = fadeOut(
-                targetAlpha = 0.3f
-            )
+            visible = state.selectedTab == 1,
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it })
         ) {
-            Text(text = "Giveaways")
+            LazyColumn {
+                items(state.giveaways!!, key = { it.id }) { giveaway ->
+                    GiveawayListItem(
+                        modifier = Modifier.animateItem(),
+                        onClickListener = {
+                            openUrl(context, giveaway.open_giveaway_url)
+                        },
+                        imageLink = giveaway.thumbnail,
+                        title = giveaway.title,
+                        shortDescription = giveaway.description,
+                        timeRemaining = giveaway.end_date,
+                        users = giveaway.users
+                    )
+                }
+            }
 
+            // TODO: add filters by shop , onSale , sortby
         }
+        if (state.isBottomSheetVisible) {
+            val listOfSortByOptions = listOf(
+                "DealRating",
+                "Title",
+                "Savings",
+                "Price",
+                "Metacritic",
+                "Reviews",
+                "Release",
+                "Store",
+                "Recent"
+            )
+            ModalBottomSheet(
+                onDismissRequest = {
+                    viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnToggleBottomSheet(false))
+                },
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = "Filtering options",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Sort by: ",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .weight(1f)
+                        )
 
-        // TODO: add filters by shop , onSale , sortby
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text("Descending", modifier = Modifier.padding(end = 8.dp))
+                        Switch(
+                            state.filterDesc ?: false,
+                            onCheckedChange = {
+                                viewModel.onEvent(
+                                    DealsAndGiveawayScreenUiEvent.OnDescFilterChanged(
+                                        it
+                                    )
+                                )
+                            }
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOfSortByOptions.forEachIndexed { index, it ->
+                            FilterChip(
+                                onClick = {
+                                    if (state.filterSortBy == it) {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnSortByFilterChanged(
+                                                ""
+                                            )
+                                        )
+                                    } else {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnSortByFilterChanged(
+                                                it
+                                            )
+                                        )
+                                    }
+                                },
+                                label = {
+                                    Text(it)
+                                },
+                                selected = state.filterSortBy == it,
+                                leadingIcon = if (state.filterSortBy == it) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Done,
+                                            contentDescription = "Done icon",
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
 
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+
+                    val store = listOf(
+                        1 to "Steam",
+                        2 to "GamersGate",
+                        3 to "GreenManGaming",
+                        4 to "Amazon",
+                        5 to "GameStop",
+                        6 to "Direct2Drive",
+                        7 to "GOG",
+                        8 to "Origin",
+                        9 to "Get Games",
+                        10 to "Shiny Loot",
+                        11 to "Humble Store",
+                        12 to "Desura",
+                        13 to "Uplay",
+                        14 to "IndieGameStand",
+                        15 to "Fanatical",
+                        16 to "Gamesrocket",
+                        17 to "Games Republic",
+                        18 to "SilaGames",
+                        19 to "Playfield",
+                        20 to "ImperialGames",
+                        21 to "WinGameStore",
+                        22 to "FunStockDigital",
+                        23 to "GameBillet",
+                        24 to "Voidu",
+                        25 to "Epic Games Store",
+                        26 to "Razer Game Store",
+                        27 to "Gamesplanet",
+                        28 to "Gamesload",
+                        29 to "2Game",
+                        30 to "IndieGala",
+                        31 to "Blizzard Shop",
+                        32 to "AllYouPlay",
+                        33 to "DLGamer",
+                        34 to "Noctre",
+                        35 to "DreamGame"
+                    )
+                    Text(
+                        text = "Store: ",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        store.forEach { (id, name) ->
+                            FilterChip(
+                                onClick = {
+                                    if (state.filterStoreId == id.toString()) {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnStoreFilterChanged(
+                                                ""
+                                            )
+                                        )
+                                    } else {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnStoreFilterChanged(
+                                                id.toString()
+                                            )
+                                        )
+                                    }
+                                },
+                                label = {
+                                    Text(name)
+                                },
+                                selected = state.filterStoreId == id.toString(),
+                                leadingIcon = if (state.filterStoreId == id.toString()) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Done,
+                                            contentDescription = "Done icon",
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+                    Text(
+                        text = "Price: ",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                    // range slider
+                    RangeSlider(
+                        modifier = Modifier.padding(8.dp),
+                        value = (
+                            state.filterLowerPrice?.toFloat()
+                                ?: 0f
+                            )..(state.filterUpperPrice?.toFloat() ?: 50f),
+                        onValueChange = { range ->
+                            viewModel.onEvent(
+                                DealsAndGiveawayScreenUiEvent.OnLowerPriceFilterChanged(
+                                    range.start.toInt()
+                                )
+                            )
+                            viewModel.onEvent(
+                                DealsAndGiveawayScreenUiEvent.OnUpperPriceFilterChanged(
+                                    range.endInclusive.toInt()
+                                )
+                            )
+                        },
+                        valueRange = 0f..50f,
+                        steps = 50
+                    )
+                    val rangeStart = "%.2f".format(state.filterLowerPrice ?: 0f)
+                    val rangeEnd = "%.2f".format(state.filterUpperPrice ?: 50f)
+                    Text(
+                        text = "$rangeStart .. $rangeEnd",
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+                    // filter games onSale
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "On Sale Games :",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Switch(state.filterOnSale ?: false, onCheckedChange = {
+                            viewModel.onEvent(
+                                DealsAndGiveawayScreenUiEvent.OnOnSaleFilterChanged(it)
+                            )
+                        })
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+                    Button(
+                        onClick = {
+                            viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnApplyDealsFilters)
+                            viewModel.onEvent(
+                                DealsAndGiveawayScreenUiEvent.OnToggleBottomSheet(false)
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Apply Filters"
+                        )
+                    }
+                }
+            }
+        }
     }
 }

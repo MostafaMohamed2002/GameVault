@@ -1,5 +1,4 @@
 package com.mostafadevo.freegames.domain.model
-import com.squareup.moshi.Json
 
 data class GameDetails(
     val id: Int,
@@ -15,16 +14,15 @@ data class GameDetails(
     val screenshots: List<Screenshot>,
     val shortDescription: String,
     val thumbnail: String
-){
-
+) {
 }
 data class Screenshot(
     val image: String
 )
 data class MinimumSystemRequirements(
-    val graphics: String?=null,
-    val memory: String?=null,
-    val os: String?=null,
-    val processor: String?=null,
-    val storage: String?=null
+    val graphics: String? = null,
+    val memory: String? = null,
+    val os: String? = null,
+    val processor: String? = null,
+    val storage: String? = null
 )

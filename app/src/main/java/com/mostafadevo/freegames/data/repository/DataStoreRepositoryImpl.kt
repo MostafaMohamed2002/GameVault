@@ -11,11 +11,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.mostafadevo.freegames.domain.model.ThemePreference
 import com.mostafadevo.freegames.domain.repository.DataStoreRepository
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
-import javax.inject.Inject
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -55,6 +55,31 @@ class DataStoreRepositoryImpl @Inject constructor(
     override suspend fun saveThemePreference(themePreference: ThemePreference) {
         dataStore.edit { preferences ->
             preferences[intPreferencesKey("theme_preference_key")] = themePreference.ordinal
+        }
+    }
+
+    override suspend fun clearSearchHistory() {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey("search_history_key")] = ""
+        }
+    }
+
+    override suspend fun setSearchHistoryLimit(limit: Int) {
+        dataStore.edit { prefs ->
+            prefs[intPreferencesKey("search_history_limit_key")] = limit
+        }
+    }
+
+    override fun getSearchHistoryLimit(): Flow<Int> {
+        return dataStore.data.catch { exception ->
+            if (exception is Exception) {
+                Timber.e(exception)
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }.map { preferences ->
+            preferences[intPreferencesKey("search_history_limit_key")] ?: 5
         }
     }
 

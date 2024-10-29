@@ -4,19 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mostafadevo.freegames.domain.repository.FreeGamesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class FreeGameDetailesViewModel @Inject constructor(
-    private val repo : FreeGamesRepository
-) :ViewModel(){
+    private val repo: FreeGamesRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow<FreeGameDetailesUiState>(FreeGameDetailesUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -29,7 +28,7 @@ class FreeGameDetailesViewModel @Inject constructor(
     fun getGameById(gameId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getGameById(gameId).collect {
-                when(it){
+                when (it) {
                     is com.mostafadevo.freegames.utils.ResultWrapper.Success -> {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
