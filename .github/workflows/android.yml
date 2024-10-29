@@ -47,7 +47,7 @@ jobs:
 
       # 📝 Step 7: Upload Test Reports (Optional)
       - name: 📤 Upload Test Reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: build/reports/tests/test
@@ -58,14 +58,14 @@ jobs:
 
       # 📂 Step 9: Upload KtLint Reports
       - name: 📤 Upload KtLint Reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ktlint-report
           path: build/reports/ktlint/
 
       # 📱 Step 10: Upload APK Artifact
       - name: 📲 Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: release-apk
           path: app/build/outputs/apk/release/*.apk
