@@ -2,7 +2,7 @@
 Your ultimate gaming companion! GameVault provides instant access to the latest free games 🎉 and exclusive game deals 🤑.
 
 
-![home-free](/assets/Screenshot_20240911_230710.png)|![free-details](/assets/Screenshot_20240911_230747.png)|
+![home-free](https://github.com/user-attachments/assets/c2783bdb-d169-430e-bf0f-c22891e2a312)|![free-details](https://github.com/user-attachments/assets/4910f801-c6ab-4c4a-a1a6-ae8fe9e7696c)|
 |---|---|
 ## Features
 
