@@ -2,24 +2,20 @@ package com.mostafadevo.freegames.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 
-
 @Composable
-fun BlurredBox(modifier: Modifier = Modifier, content : @Composable () -> Unit) {
+fun BlurredBox(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
-        ,
     ) {
         Box(
             modifier = Modifier
@@ -31,14 +27,16 @@ fun BlurredBox(modifier: Modifier = Modifier, content : @Composable () -> Unit) 
     }
 }
 
-@Preview(apiLevel = 34, showSystemUi = true, showBackground = true,
+@Preview(
+    apiLevel = 34,
+    showSystemUi = true,
+    showBackground = true,
     wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
 )
 @Composable
 fun BlurredBoxPreview() {
     MaterialTheme {
-        BlurredBox(
-        ) {
+        BlurredBox() {
             Text("Hello, World!")
         }
     }

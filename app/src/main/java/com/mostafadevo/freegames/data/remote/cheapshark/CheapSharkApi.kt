@@ -1,21 +1,20 @@
 package com.mostafadevo.freegames.data.remote.cheapshark
 
-import com.mostafadevo.freegames.data.remote.cheapshark.dto.DealDetailsDTO
 import com.mostafadevo.freegames.data.remote.cheapshark.dto.DealsDTOItem
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-
 interface CheapSharkApi {
-    @GET("deals")
-    suspend fun getDeal(
-        @Query("title") title:String?=null,
-    ):Response<List<DealsDTOItem>>
 
     @GET("deals")
-    suspend fun getDealById(
-        @Query("id") id:String,
-    ):Response<DealDetailsDTO>
-
+    suspend fun getDeals(
+        @Query("title") title: String? = null,
+        @Query("storeID") storeId: String? = null,
+        @Query("lowerPrice") lowerPrice: Int? = null,
+        @Query("upperPrice") upperPrice: Int? = null,
+        @Query("onSale") onSale: Boolean? = null,
+        @Query("sortBy") sortBy: String? = null,
+        @Query("desc") desc: Boolean? = null
+    ): Response<List<DealsDTOItem>>
 }

@@ -1,8 +1,5 @@
 package com.mostafadevo.freegames.data.remote.freetogame.dto
 
-
-import com.mostafadevo.freegames.data.local.FreeGamesEntity
-import com.mostafadevo.freegames.domain.model.Game
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -30,7 +27,5 @@ data class GameDTO(
     val thumbnail: String,
     @Json(name = "title")
     val title: String
-){
-
-
+) {
 }

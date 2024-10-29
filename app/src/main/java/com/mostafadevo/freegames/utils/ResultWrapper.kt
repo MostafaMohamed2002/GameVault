@@ -10,5 +10,4 @@ sealed class ResultWrapper<T>(
     class Error<T>(message: String?, data: T? = null) : ResultWrapper<T>(data, message)
 
     class Loading<T> : ResultWrapper<T>()
-
 }

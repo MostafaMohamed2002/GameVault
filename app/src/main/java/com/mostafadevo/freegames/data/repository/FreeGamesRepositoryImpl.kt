@@ -10,15 +10,15 @@ import com.mostafadevo.freegames.domain.model.Game
 import com.mostafadevo.freegames.domain.model.GameDetails
 import com.mostafadevo.freegames.domain.repository.FreeGamesRepository
 import com.mostafadevo.freegames.utils.ResultWrapper
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 class FreeGamesRepositoryImpl @Inject constructor(
     private val api: FreeGamesApi,
     private val db: FreeGamesDao,
-    private val gameDetailsDao : FreeGameDetailsDao
+    private val gameDetailsDao: FreeGameDetailsDao
 ) : FreeGamesRepository {
     override suspend fun getGames(): Flow<ResultWrapper<List<Game>>> {
         return flow {
@@ -27,8 +27,7 @@ class FreeGamesRepositoryImpl @Inject constructor(
             if (cachedGames.isNotEmpty()) {
                 emit(ResultWrapper.Success(cachedGames.map { it.toDomain() }))
                 return@flow
-            }
-            else{
+            } else {
                 try {
                     val newtworkGames = api.getGames()
                     if (newtworkGames.isSuccessful) {
@@ -38,8 +37,7 @@ class FreeGamesRepositoryImpl @Inject constructor(
                     }
                 } catch (e: HttpException) {
                     emit(ResultWrapper.Error(message = e.message))
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     emit(ResultWrapper.Error(message = e.message))
                 }
             }
@@ -63,13 +61,11 @@ class FreeGamesRepositoryImpl @Inject constructor(
                 }
             } catch (e: HttpException) {
                 emit(ResultWrapper.Error(message = e.message))
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 emit(ResultWrapper.Error(message = e.message))
             }
         }
     }
-
 
     override suspend fun refreshGames(): Flow<ResultWrapper<List<Game>>> = flow {
         emit(ResultWrapper.Loading()) // Emit the loading state
@@ -87,7 +83,6 @@ class FreeGamesRepositoryImpl @Inject constructor(
                 // Emit the refreshed games
                 emit(ResultWrapper.Success(games.map { it.toDomain() }))
             }
-
         } catch (e: Exception) {
             // Handle the error and emit an error state
             emit(ResultWrapper.Error("Failed to refresh games $e"))
@@ -104,12 +99,15 @@ class FreeGamesRepositoryImpl @Inject constructor(
             try {
                 val games = api.getGamesByFilters(platform, category, sortBy)
                 if (games.isSuccessful) {
-                    emit(ResultWrapper.Success(games.body()!!.map { it.toEntity() }.map { it.toDomain() }))
+                    emit(
+                        ResultWrapper.Success(
+                            games.body()!!.map { it.toEntity() }.map { it.toDomain() }
+                        )
+                    )
                 }
             } catch (e: HttpException) {
                 emit(ResultWrapper.Error(message = e.message))
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 emit(ResultWrapper.Error(message = e.message))
             }
         }

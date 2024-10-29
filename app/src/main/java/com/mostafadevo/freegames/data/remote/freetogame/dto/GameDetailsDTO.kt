@@ -1,6 +1,5 @@
 package com.mostafadevo.freegames.data.remote.freetogame.dto
 
-
 import com.squareup.moshi.Json
 
 data class GameDetailsDTO(

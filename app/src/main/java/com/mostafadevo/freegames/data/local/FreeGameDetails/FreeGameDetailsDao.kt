@@ -19,5 +19,4 @@ interface FreeGameDetailsDao {
 
     @Query("DELETE FROM freegamedetailsentity")
     suspend fun deleteAll()
-
 }

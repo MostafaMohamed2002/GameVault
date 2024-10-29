@@ -32,23 +32,71 @@ public val FilterIcon: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(6f, 10.5f)
-                arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, 0.5f, -0.5f)
+                arcToRelative(
+                    0.5f,
+                    0.5f,
+                    0f,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    0.5f,
+                    -0.5f
+                )
                 horizontalLineToRelative(3f)
                 arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, 0f, 1f)
                 horizontalLineToRelative(-3f)
-                arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, -0.5f, -0.5f)
+                arcToRelative(
+                    0.5f,
+                    0.5f,
+                    0f,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    -0.5f,
+                    -0.5f
+                )
                 moveToRelative(-2f, -3f)
-                arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, 0.5f, -0.5f)
+                arcToRelative(
+                    0.5f,
+                    0.5f,
+                    0f,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    0.5f,
+                    -0.5f
+                )
                 horizontalLineToRelative(7f)
                 arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, 0f, 1f)
                 horizontalLineToRelative(-7f)
-                arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, -0.5f, -0.5f)
+                arcToRelative(
+                    0.5f,
+                    0.5f,
+                    0f,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    -0.5f,
+                    -0.5f
+                )
                 moveToRelative(-2f, -3f)
-                arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, 0.5f, -0.5f)
+                arcToRelative(
+                    0.5f,
+                    0.5f,
+                    0f,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    0.5f,
+                    -0.5f
+                )
                 horizontalLineToRelative(11f)
                 arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, 0f, 1f)
                 horizontalLineToRelative(-11f)
-                arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = false, isPositiveArc = true, -0.5f, -0.5f)
+                arcToRelative(
+                    0.5f,
+                    0.5f,
+                    0f,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    -0.5f,
+                    -0.5f
+                )
             }
         }.build()
         return _Filter!!

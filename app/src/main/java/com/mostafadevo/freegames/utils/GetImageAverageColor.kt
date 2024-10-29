@@ -1,24 +1,35 @@
 package com.mostafadevo.freegames.utils
 
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.ColorUtils
+import coil.imageLoader
+import coil.request.ImageRequest
 
 @Composable
-fun getAverageColor(imageBitmap: ImageBitmap): Color {
+fun getAverageColor(imageUrl: String): Color {
     var averageColor by remember { mutableStateOf(Color.Transparent) }
+    val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(imageUrl) {
+        val request = ImageRequest.Builder(context)
+            .data(imageUrl)
+            .build()
+
+        val drawable = request.context.imageLoader.execute(request).drawable
+        val bitmap = (drawable as BitmapDrawable).bitmap
+        val imageBitmap = bitmap.asImageBitmap()
 
         val compatibleBitmap = imageBitmap.asAndroidBitmap()
             .copy(Bitmap.Config.ARGB_8888, false)
@@ -26,8 +37,13 @@ fun getAverageColor(imageBitmap: ImageBitmap): Color {
         // Retrieve the pixels from the compatible Bitmap
         val pixels = IntArray(compatibleBitmap.width * compatibleBitmap.height)
         compatibleBitmap.getPixels(
-            pixels, 0, compatibleBitmap.width, 0, 0,
-            compatibleBitmap.width, compatibleBitmap.height
+            pixels,
+            0,
+            compatibleBitmap.width,
+            0,
+            0,
+            compatibleBitmap.width,
+            compatibleBitmap.height
         )
 
         var redSum = 0
@@ -65,7 +81,8 @@ fun getAverageColor(imageBitmap: ImageBitmap): Color {
     val darkerColor = ColorUtils.HSLToColor(
         floatArrayOf(
             hsl[0],
-            hsl[1], darkerLightness
+            hsl[1],
+            darkerLightness
         )
     )
 

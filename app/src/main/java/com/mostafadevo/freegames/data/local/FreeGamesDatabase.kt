@@ -14,7 +14,7 @@ import com.mostafadevo.freegames.data.local.FreeGameDetails.ScreenshotListConver
     exportSchema = false
 )
 @TypeConverters(MinimumSystemRequirementsConverter::class, ScreenshotListConverter::class)
-abstract class FreeGamesDatabase : RoomDatabase(){
+abstract class FreeGamesDatabase : RoomDatabase() {
     abstract fun FreegamesDao(): FreeGamesDao
     abstract fun FreeGameDetailsDao(): FreeGameDetailsDao
 }
