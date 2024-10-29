@@ -2,9 +2,9 @@ name: Android CI/CD Pipeline 🚀
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ 'master' ]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ 'master' ]
   workflow_dispatch: # Allows manual trigger
 
 jobs:
