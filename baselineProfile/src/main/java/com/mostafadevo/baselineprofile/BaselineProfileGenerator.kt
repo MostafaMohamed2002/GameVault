@@ -66,7 +66,7 @@ class BaselineProfileGenerator {
                 fling(Direction.DOWN)
             }
             device.waitForIdle()
-
+            device.wait(Until.hasObject(By.res("FreeGameListItem")), 20_000)
             device.findObjects(By.res("FreeGameListItem")).apply {
                 val index = (iteration?:0)% this.size
                 this[index].click()
@@ -79,11 +79,9 @@ class BaselineProfileGenerator {
                 fling(Direction.DOWN)
             }
             device.pressBack()
-            device.wait(Until.gone(By.text("Deals")), 20_000)
             //deals screen
-            device.findObject(By.text("Deals")).apply {
-                click()
-            }
+            device.wait(Until.hasObject(By.res("Deals")), 20_000)
+            device.findObject(By.res("bottom:Deals")).click()
             device.wait(Until.hasObject(By.res("deals_list")), 20_000)
             device.findObject(By.res("deals_list")).apply {
                 setGestureMargin(device.displayWidth / 5)

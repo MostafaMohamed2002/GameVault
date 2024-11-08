@@ -1,4 +1,7 @@
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import java.io.FileInputStream
+import java.io.IOException
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -9,17 +12,53 @@ plugins {
     alias(libs.plugins.baselineprofile) // hilt
     id("org.jlleitschuh.gradle.ktlint") // ktlint
 }
+val properties = Properties()
+val versionMajor = 1
+val versionMinor = 0
+val versionPatch = 0
+val versionBuild = 0 // bump for dogfood builds, public betas, etc.
+val isBeta = true
 
+var versionExt = ""
+if (versionBuild > 0) {
+    versionExt += ".$versionBuild"
+}
+if (isBeta) {
+    versionExt += "-beta"
+}
 android {
     namespace = "com.mostafadevo.freegames"
     compileSdk = 35
+
+    try {
+        val propertiesFile = rootProject.file("keystore.properties")
+        val properties = Properties()
+
+        if (propertiesFile.readText().isNotEmpty()) {
+            FileInputStream(propertiesFile).use { inputStream ->
+                properties.load(inputStream)
+            }
+
+            signingConfigs {
+                getByName("debug") {
+                    storeFile = file(properties["signingConfig.storeFile"] as String)
+                    storePassword = properties["signingConfig.storePassword"] as String
+                    keyAlias = properties["signingConfig.keyAlias"] as String
+                    keyPassword = properties["signingConfig.keyPassword"] as String
+                }
+            }
+        }
+    } catch (ignored: IOException) {
+        // Handle exception if necessary
+    }
 
     defaultConfig {
         applicationId = "com.mostafadevo.freegames"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode =
+            versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
+        versionName = "${versionMajor}.${versionMinor}.${versionPatch}${versionExt}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -28,15 +67,25 @@ android {
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isDebuggable = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
+        getByName("debug") {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            isDebuggable = true
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -63,6 +112,18 @@ android {
             reporter(ReporterType.CHECKSTYLE)
             reporter(ReporterType.HTML)
         }
+    }
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
+            isUniversalApk = true
+        }
+    }
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 

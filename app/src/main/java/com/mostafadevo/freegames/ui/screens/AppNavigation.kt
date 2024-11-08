@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
@@ -139,11 +140,6 @@ fun NavigationBottomBar(navController: NavController) {
             }
         ),
         NavItem(
-            "/fav",
-            "Favourite",
-            icon = { Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null) }
-        ),
-        NavItem(
             "/settings",
             "Settings",
             icon = { Icon(imageVector = Icons.Default.Settings, contentDescription = null) }
@@ -153,7 +149,11 @@ fun NavigationBottomBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    BottomAppBar {
+    BottomAppBar(
+        modifier = Modifier.semantics {
+            testTagsAsResourceId = true
+        }
+    ){
         items.forEach { item ->
             val animatedWeight by animateFloatAsState(
                 targetValue = if (currentRoute == item.route) 1.5f else 1f
@@ -176,7 +176,9 @@ fun NavigationBottomBar(navController: NavController) {
                     Text(item.title)
                 },
                 alwaysShowLabel = true,
-                modifier = Modifier.weight(animatedWeight)
+                modifier = Modifier
+                    .weight(animatedWeight)
+                    .testTag("bottom:${item.title}")
             )
         }
     }
