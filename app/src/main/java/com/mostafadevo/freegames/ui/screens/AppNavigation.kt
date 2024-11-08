@@ -93,9 +93,6 @@ fun NavHostScreen() {
                     freeGamesScreenViewModel = freeGamesScreenViewModel
                 )
             }
-            composable(route = "/fav") {
-                bottomBarVisibility = true // Show bottom bar in the "fav" screen
-            }
             composable(
                 route = "/details/{gameId}",
                 arguments = listOf(navArgument("gameId") { type = NavType.IntType })
