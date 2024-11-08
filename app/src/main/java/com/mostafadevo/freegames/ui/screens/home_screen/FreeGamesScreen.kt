@@ -3,6 +3,7 @@ package com.mostafadevo.freegames.ui.screens.home_screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +26,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -43,12 +43,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.mostafadevo.freegames.ui.components.FilterIcon
 import com.mostafadevo.freegames.ui.components.FreeGameListItem
+import com.mostafadevo.freegames.ui.components.ShimmeringText
 import java.util.Locale
 import kotlinx.coroutines.flow.collectLatest
 
@@ -62,7 +64,6 @@ fun FreeGamesScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val state by freeGamesScreenViewModel.uiState.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true // this fixes the issue of the sheet not expanding fully
     )
@@ -93,17 +94,23 @@ fun FreeGamesScreen(
                 }
             }
             if (state.isLoading) {
-                // TODO: replace with shimmer text
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ShimmeringText(
+                        text = "Loading...",
+                        shimmerColor = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
             LazyColumn(
+                modifier = Modifier.testTag("free_games_list"),
                 contentPadding = PaddingValues(8.dp),
                 content = {
                     items(state.games, key = { it.id }) { game ->
                         FreeGameListItem(
-                            modifier = Modifier.animateItem(),
+                            modifier = Modifier.animateItem().testTag("free_game"),
                             game = game,
                             onClickListener = {
                                 navController.navigate("/details/$it")
@@ -316,7 +323,9 @@ fun FreeGamesScreen(
                     )
                     Button(
                         onClick = {
-                            freeGamesScreenViewModel.onEvent(FreeGamesScreenEvents.onSearchWithFilters)
+                            freeGamesScreenViewModel.onEvent(
+                                FreeGamesScreenEvents.onSearchWithFilters
+                            )
                             showBottomSheet = false
                         },
                         modifier = Modifier

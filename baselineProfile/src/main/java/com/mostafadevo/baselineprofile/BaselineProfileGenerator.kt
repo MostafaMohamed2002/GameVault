@@ -4,6 +4,9 @@ import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,7 +49,8 @@ class BaselineProfileGenerator {
                 ?: throw Exception("targetAppId not passed as instrumentation runner arg"),
 
             // See: https://d.android.com/topic/performance/baselineprofiles/dex-layout-optimizations
-            includeInStartupProfile = true
+            includeInStartupProfile = true,
+            maxIterations = 3
         ) {
             // This block defines the app's critical user journey. Here we are interested in
             // optimizing for app startup. But you can also navigate and scroll through your most important UI.
@@ -54,15 +58,57 @@ class BaselineProfileGenerator {
             // Start default activity for your app
             pressHome()
             startActivityAndWait()
+            device.waitForIdle()
+            device.findObject(By.res("free_games_list")).apply {
+                wait(Until.hasObject(By.res("free_games_list")), 20_000)
+                setGestureMargin(device.displayWidth / 5)
+                fling(Direction.DOWN)
+                fling(Direction.DOWN)
+            }
+            device.waitForIdle()
 
-            // TODO Write more interactions to optimize advanced journeys of your app.
-            // For example:
-            // 1. Wait until the content is asynchronously loaded
-            // 2. Scroll the feed content
-            // 3. Navigate to detail screen
+            device.findObjects(By.res("FreeGameListItem")).apply {
+                val index = (iteration?:0)% this.size
+                this[index].click()
+            }
+            device.wait(Until.gone(By.res("FreeGameListItem")), 20_000)
+            device.wait(Until.hasObject(By.res("FreeGameDetailesScreen")), 20_000)
+            //scroll throught the details screen
+            device.findObject(By.res("FreeGameDetailesScreen")).apply {
+                setGestureMargin(device.displayWidth / 5 )
+                fling(Direction.DOWN)
+            }
+            device.pressBack()
+            device.wait(Until.gone(By.text("Deals")), 20_000)
+            //deals screen
+            device.findObject(By.text("Deals")).apply {
+                click()
+            }
+            device.wait(Until.hasObject(By.res("deals_list")), 20_000)
+            device.findObject(By.res("deals_list")).apply {
+                setGestureMargin(device.displayWidth / 5)
+                fling(Direction.DOWN)
+                fling(Direction.DOWN)
+            }
+            device.waitForIdle()
+            device.findObjects(By.res("DealsListItem")).apply {
+                val index = (iteration?:0)% this.size
+                this[index].click()
+            }
+            device.wait(Until.gone(By.res("DealsListItem")), 20_000)
+            device.pressBack()
 
-            // Check UiAutomator documentation for more information how to interact with the app.
-            // https://d.android.com/training/testing/other-components/ui-automator
+            //giveaways screen
+            device.findObject(By.text("Giveaways \uD83C\uDF89")).apply {
+                click()
+            }
+            device.wait(Until.hasObject(By.res("giveaways_list")), 20_000)
+            device.findObject(By.res("giveaways_list")).apply {
+                setGestureMargin(device.displayWidth / 5)
+                fling(Direction.DOWN)
+                fling(Direction.DOWN)
+            }
         }
     }
+
 }

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,7 +62,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,6 +72,7 @@ import com.mostafadevo.freegames.ui.components.DealsListItem
 import com.mostafadevo.freegames.ui.components.FilterIcon
 import com.mostafadevo.freegames.ui.components.GiveawayListItem
 import com.mostafadevo.freegames.ui.components.History
+import com.mostafadevo.freegames.ui.components.ShimmeringText
 import com.mostafadevo.freegames.utils.openUrl
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -83,7 +84,6 @@ import com.mostafadevo.freegames.utils.openUrl
 @Composable
 fun DealsScreen(
     viewModel: DealsAndGiveawayScreenViewModel,
-    navController: NavHostController
 ) {
     val state = viewModel.dealsAndGiveawayScreenUiState.collectAsStateWithLifecycle().value
     val snackbarHostState = remember { SnackbarHostState() }
@@ -92,7 +92,9 @@ fun DealsScreen(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-    val scope = rememberCoroutineScope()
+    val sheetStateGiveaways = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(state.dealsSearchBarText) {
@@ -128,14 +130,29 @@ fun DealsScreen(
             }
         }
     }, floatingActionButton = {
-            AnimatedVisibility(
-                state.selectedTab == 0 && state.isDealsSearchBarActive.not(),
-                enter = scaleIn(transformOrigin = TransformOrigin.Center),
-                exit = scaleOut(transformOrigin = TransformOrigin.Center)
+            if (
+                state.selectedTab == 0 && state.isDealsSearchBarActive.not()
             ) {
                 FloatingActionButton(
                     onClick = {
                         viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnToggleBottomSheet(true))
+                    }
+                ) {
+                    Icon(
+                        imageVector = FilterIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+            if (state.selectedTab == 1) {
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.onEvent(
+                            DealsAndGiveawayScreenUiEvent.OnToggleGiveawaysBottomSheet(
+                                true
+                            )
+                        )
                     }
                 ) {
                     Icon(
@@ -170,15 +187,6 @@ fun DealsScreen(
             enter = slideInVertically(initialOffsetY = { it }),
             exit = slideOutVertically(targetOffsetY = { it })
         ) {
-            if (state.isDealsLoading) {
-                // TODO: replace with shimmer
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
             Column(
                 modifier = Modifier.fillMaxSize()
 
@@ -199,7 +207,9 @@ fun DealsScreen(
                         viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnSearchBarTextChanged(it))
                     }, onSearch = { searchQuery ->
                         searchQuery.let {
-                            viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnSearchBarTextSubmit(it))
+                            viewModel.onEvent(
+                                DealsAndGiveawayScreenUiEvent.OnSearchBarTextSubmit(it)
+                            )
                             // hide keyboard
                             keyboardController?.hide()
                         }
@@ -238,21 +248,19 @@ fun DealsScreen(
                     // TODO:change the status bar color to be surface container color
                     // Search bar content
                     if (state.dealsSearchBarText.isEmpty() || state.dealsSearchBarText.isBlank()) {
-                        LazyColumn(
+                        Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .imePadding()
-                                .imeNestedScroll(),
-                            contentPadding = PaddingValues(8.dp),
+                                .imeNestedScroll()
+                                .padding(8.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            item {
-                                Text(
-                                    text = "Recent Searches",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
-                            items(state.dealsSearchHistory ?: emptyList()) { deal ->
+                            Text(
+                                text = "Recent Searches",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            state.dealsSearchHistory?.forEach { deal ->
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -287,7 +295,20 @@ fun DealsScreen(
                         }
                     }
                     state.dealsSearchBardata?.let {
-                        LazyColumn {
+                        LazyColumn() {
+                            if (state.dealsSearchBardata.isNotEmpty()) {
+                                item {
+                                    Text(
+                                        text = "Found ${state.dealsSearchBardata.size} Search results !",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .align(
+                                                Alignment.CenterHorizontally
+                                            )
+                                    )
+                                }
+                            }
                             items(it, key = { it.dealID }) { deal ->
                                 DealsListItem(
                                     modifier = Modifier.animateItem(),
@@ -307,7 +328,20 @@ fun DealsScreen(
                         }
                     }
                 }
-                LazyColumn {
+                if (state.isDealsLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ShimmeringText(
+                            text = "Loading Deals",
+                            shimmerColor = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                LazyColumn(
+                    modifier = Modifier.testTag("deals_list")
+                ) {
                     items(state.deals!!, key = { it.dealID }) { deal ->
                         DealsListItem(
                             modifier = Modifier.animateItem(),
@@ -335,7 +369,20 @@ fun DealsScreen(
             enter = slideInVertically(initialOffsetY = { it }),
             exit = slideOutVertically(targetOffsetY = { it })
         ) {
-            LazyColumn {
+            if (state.isGiveawaysLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ShimmeringText(
+                        text = "Loading Giveaways",
+                        shimmerColor = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            LazyColumn(
+                modifier = Modifier.testTag("giveaways_list")
+            ) {
                 items(state.giveaways!!, key = { it.id }) { giveaway ->
                     GiveawayListItem(
                         modifier = Modifier.animateItem(),
@@ -567,9 +614,9 @@ fun DealsScreen(
                     RangeSlider(
                         modifier = Modifier.padding(8.dp),
                         value = (
-                            state.filterLowerPrice?.toFloat()
+                            state.filterLowerPrice
                                 ?: 0f
-                            )..(state.filterUpperPrice?.toFloat() ?: 50f),
+                            )..(state.filterUpperPrice ?: 50f),
                         onValueChange = { range ->
                             viewModel.onEvent(
                                 DealsAndGiveawayScreenUiEvent.OnLowerPriceFilterChanged(
@@ -625,6 +672,254 @@ fun DealsScreen(
                             viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnApplyDealsFilters)
                             viewModel.onEvent(
                                 DealsAndGiveawayScreenUiEvent.OnToggleBottomSheet(false)
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Apply Filters"
+                        )
+                    }
+                }
+            }
+        }
+        if (state.isGiveawaysBottomSheetVisible) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    viewModel.onEvent(
+                        DealsAndGiveawayScreenUiEvent.OnToggleGiveawaysBottomSheet(
+                            false
+                        )
+                    )
+                },
+                sheetState = sheetStateGiveaways
+            ) {
+                val giveawaysPlatform = listOf(
+                    "pc",
+                    "steam",
+                    "epic-games-store",
+                    "ubisoft",
+                    "gog",
+                    "itchio",
+                    "ps4",
+                    "ps5",
+                    "xbox-one",
+                    "xbox-series-xs",
+                    "switch",
+                    "android",
+                    "ios",
+                    "vr",
+                    "battlenet",
+                    "origin",
+                    "drm-free",
+                    "xbox-360"
+
+                )
+                val giveawaysSortOptions = listOf(
+                    "date",
+                    "value",
+                    "popularity"
+                )
+                val giveawaysType = listOf(
+                    "game",
+                    "loot",
+                    "beta"
+                )
+
+                Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = "Filtering options",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+
+                    Text(
+                        text = "Sort by: ",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        giveawaysSortOptions.forEachIndexed { index, it ->
+                            FilterChip(
+                                onClick = {
+                                    if (state.giveawaysFilterSortBy == it) {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnGiveawaysSortByFilterChanged(
+                                                ""
+                                            )
+                                        )
+                                    } else {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnGiveawaysSortByFilterChanged(
+                                                it
+                                            )
+                                        )
+                                    }
+                                },
+                                label = {
+                                    Text(it.lowercase().capitalize().replace("_", " "))
+                                },
+                                selected = state.giveawaysFilterSortBy == it,
+                                leadingIcon = if (state.giveawaysFilterSortBy == it) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Done,
+                                            contentDescription = "Done icon",
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+
+                    Text(
+                        text = "Type: ",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        giveawaysType.forEach { it ->
+                            FilterChip(
+                                onClick = {
+                                    if (state.giveawaysFilterType == it) {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnGiveawaysTypeFilterChanged(
+                                                ""
+                                            )
+                                        )
+                                    } else {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnGiveawaysTypeFilterChanged(
+                                                it
+                                            )
+                                        )
+                                    }
+                                },
+                                label = {
+                                    Text(it.lowercase().capitalize().replace("_", " "))
+                                },
+                                selected = state.giveawaysFilterType == it,
+                                leadingIcon = if (state.giveawaysFilterType == it) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Done,
+                                            contentDescription = "Done icon",
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+                    Text(
+                        text = "Platform: ",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        giveawaysPlatform.forEach { it ->
+                            FilterChip(
+                                onClick = {
+                                    if (state.giveawaysFilterPlatform == it) {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnGiveawaysPlatformFilterChanged(
+                                                ""
+                                            )
+                                        )
+                                    } else {
+                                        viewModel.onEvent(
+                                            DealsAndGiveawayScreenUiEvent.OnGiveawaysPlatformFilterChanged(
+                                                it
+                                            )
+                                        )
+                                    }
+                                },
+                                label = {
+                                    Text(it.lowercase().capitalize().replace("_", " "))
+                                },
+                                selected = state.giveawaysFilterPlatform == it,
+                                leadingIcon = if (state.giveawaysFilterPlatform == it) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Done,
+                                            contentDescription = "Done icon",
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                    )
+                    Button(
+                        onClick = {
+                            viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnApplyGiveawaysFilters)
+                            viewModel.onEvent(
+                                DealsAndGiveawayScreenUiEvent.OnToggleGiveawaysBottomSheet(false)
                             )
                         },
                         modifier = Modifier

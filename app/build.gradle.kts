@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.volley)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.androidx.profileinstaller)
+    implementation(libs.androidx.browser)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -94,7 +95,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // timber
-    implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation(libs.timber)
 
     // kotlin coroutines
     implementation(libs.kotlinx.coroutines.android)
@@ -118,10 +119,10 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     // datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation(libs.androidx.datastore.preferences)
 
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.compose.material:material:1.7.4")
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.material)
 }
 ksp {
     arg("dagger.incremental", "true")

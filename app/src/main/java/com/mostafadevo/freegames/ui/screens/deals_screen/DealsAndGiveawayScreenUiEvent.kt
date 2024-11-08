@@ -47,4 +47,23 @@ sealed class DealsAndGiveawayScreenUiEvent {
 
     data object OnClearSearchBarDeals : DealsAndGiveawayScreenUiEvent()
     data object OnApplyDealsFilters : DealsAndGiveawayScreenUiEvent()
+
+    // giveaways bottom sheet events
+    data class OnToggleGiveawaysBottomSheet(
+        val isVisible: Boolean
+    ) : DealsAndGiveawayScreenUiEvent()
+
+    data class OnGiveawaysSortByFilterChanged(
+        val sortBy: String
+    ) : DealsAndGiveawayScreenUiEvent()
+
+    data class OnGiveawaysTypeFilterChanged(
+        val type: String
+    ) : DealsAndGiveawayScreenUiEvent()
+
+    data class OnGiveawaysPlatformFilterChanged(
+        val platform: String
+    ) : DealsAndGiveawayScreenUiEvent()
+
+    data object OnApplyGiveawaysFilters : DealsAndGiveawayScreenUiEvent()
 }

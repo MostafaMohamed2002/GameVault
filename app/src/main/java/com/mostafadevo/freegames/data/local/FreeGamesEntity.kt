@@ -20,5 +20,4 @@ data class FreeGamesEntity(
     val thumbnail: String,
     @ColumnInfo(name = "title")
     val title: String
-) {
-}
+)

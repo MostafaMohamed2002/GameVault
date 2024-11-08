@@ -3,12 +3,14 @@
 package com.mostafadevo.freegames.ui
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mostafadevo.freegames.domain.model.ThemePreference
@@ -21,8 +23,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        installSplashScreen().apply {
+            Handler(Looper.getMainLooper()).postDelayed({
+                // Dismiss the splash screen after 1 second delay
+            }, 1000)
+        }
+        enableEdgeToEdge()
         setContent {
             val settingsViewModel = hiltViewModel<SettingsScreenViewModel>()
             val themeState = settingsViewModel.themeState.collectAsStateWithLifecycle()

@@ -155,15 +155,13 @@ fun GiveawayListItem(
                     .clip(RoundedCornerShape(8.dp))
             ) {
                 Text(
-                    text = "End in ${
-                    if (timeRemaining == "N/A") {
+                    text = if (timeRemaining == "N/A") {
                         "N/A"
                     } else {
                         getTimeRemaining(
                             timeRemaining
                         )
-                    }
-                    }",
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 12.sp,
                     color = Color.White,

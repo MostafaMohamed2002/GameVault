@@ -8,8 +8,8 @@ interface GamePowerApi {
 
     @GET("giveaways/")
     suspend fun getGiveaways(
-        @Query("platform") platform: String = "pc",
-        @Query("sort-by") sortBy: String = "popularity",
-        @Query("type") type: String
+        @Query("platform") platform: String? = null,
+        @Query("sort-by") sortBy: String? = null,
+        @Query("type") type: String? = null
     ): List<GiveawayDtoItem>
 }

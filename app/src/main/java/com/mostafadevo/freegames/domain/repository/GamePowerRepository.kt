@@ -5,5 +5,9 @@ import com.mostafadevo.freegames.utils.ResultWrapper
 import kotlinx.coroutines.flow.Flow
 
 interface GamePowerRepository {
-    suspend fun getGiveaways(): Flow<ResultWrapper<List<Giveaway>>>
+    suspend fun getGiveaways(
+        platform: String?,
+        sortBy: String?,
+        type: String?
+    ): Flow<ResultWrapper<List<Giveaway>>>
 }

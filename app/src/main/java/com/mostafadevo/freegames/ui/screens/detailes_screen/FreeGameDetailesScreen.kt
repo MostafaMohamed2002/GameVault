@@ -1,10 +1,8 @@
 package com.mostafadevo.freegames.ui.screens.detailes_screen
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -57,6 +55,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -66,6 +66,7 @@ import com.mostafadevo.freegames.ui.components.BlurredBox
 import com.mostafadevo.freegames.utils.extractDominantColor
 import com.mostafadevo.freegames.utils.getContrastingTextColor
 import com.mostafadevo.freegames.utils.loadImage
+import com.mostafadevo.freegames.utils.openUrl
 
 // TODO: this should be refactored
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,7 +80,6 @@ fun FreeGameDetailesScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var backgroundColor by remember { mutableStateOf(Color.Transparent) }
     var buttonBackground by remember { mutableStateOf(Color.Transparent) }
-    var buttonTextColor by remember { mutableStateOf(Color.Black) }
     val isReadMoreEnabled = remember { mutableStateOf(false) }
     val isRequirementsEnabled = remember { mutableStateOf(false) }
     val pagerState = rememberPagerState { state.game.screenshots.size }
@@ -108,6 +108,7 @@ fun FreeGameDetailesScreen(
             }
             Column(
                 modifier = Modifier
+                    .testTag("FreeGameDetailesScreen")
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .background(
@@ -181,9 +182,10 @@ fun FreeGameDetailesScreen(
                                 )
                                 .weight(1f)
                                 .clickable {
-                                    val intent = Intent(Intent.ACTION_VIEW)
-                                    intent.data = Uri.parse(state.game.freetogameProfileUrl)
-                                    context.startActivity(intent)
+                                    openUrl(
+                                        context = context,
+                                        url = state.game.freetogameProfileUrl
+                                    )
                                 },
                             contentAlignment = Alignment.Center
                         ) {

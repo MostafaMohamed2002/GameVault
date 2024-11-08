@@ -21,5 +21,9 @@ data class DealsAndGiveawayScreenUiState(
     val filterOnSale: Boolean ? = false,
     var filterSortBy: String ? = null,
     val filterDesc: Boolean ? = false,
-    val searchHistoryLimit: Int = 5
+    val searchHistoryLimit: Int = 5,
+    val isGiveawaysBottomSheetVisible: Boolean = false,
+    val giveawaysFilterSortBy: String ? = null,
+    val giveawaysFilterType: String ? = null,
+    val giveawaysFilterPlatform: String ? = null
 )

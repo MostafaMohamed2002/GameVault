@@ -23,5 +23,4 @@ data class FreeGameDetailsEntity(
     val screenshots: List<Screenshot>,
     val shortDescription: String,
     val thumbnail: String
-) {
-}
+)

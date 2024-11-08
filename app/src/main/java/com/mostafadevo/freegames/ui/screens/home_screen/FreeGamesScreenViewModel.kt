@@ -54,7 +54,7 @@ class FreeGamesScreenViewModel @Inject constructor(
         }
     }
 
-    fun getGamesByFilters(platform: String?, category: String?, sortBy: String?) {
+    private fun getGamesByFilters(platform: String?, category: String?, sortBy: String?) {
         viewModelScope.launch {
             repository.getGamesByFilters(platform, category, sortBy).collectLatest { result ->
                 when (result) {

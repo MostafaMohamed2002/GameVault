@@ -8,6 +8,7 @@ import com.mostafadevo.freegames.domain.repository.GamePowerRepository
 import com.mostafadevo.freegames.utils.ResultWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class DealsAndGiveawayScreenViewModel @Inject constructor(
@@ -38,17 +40,23 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
 
     private fun loadSearchHistoryLimit() {
         viewModelScope.launch {
-            val searchHistoryLimit = datastoreRepo.getSearchHistoryLimit().first()
-            _dealsAndGiveawayScreenUiState.value =
-                _dealsAndGiveawayScreenUiState.value.copy(searchHistoryLimit = searchHistoryLimit)
+            datastoreRepo.getSearchHistoryLimit().collectLatest {
+                _dealsAndGiveawayScreenUiState.value =
+                    _dealsAndGiveawayScreenUiState.value.copy(searchHistoryLimit = it)
+            }
         }
     }
 
     private fun loadSearchHistory() {
-        viewModelScope.launch {
-            val searchHistory = datastore.getSearchHistory().first()
-            _dealsAndGiveawayScreenUiState.value =
-                _dealsAndGiveawayScreenUiState.value.copy(dealsSearchHistory = searchHistory)
+        viewModelScope.launch(Dispatchers.IO) {
+            datastore.getSearchHistory().collectLatest { searchHistory ->
+                withContext(Dispatchers.Main) {
+                    _dealsAndGiveawayScreenUiState.value =
+                        _dealsAndGiveawayScreenUiState.value.copy(
+                            dealsSearchHistory = searchHistory.reversed()
+                        )
+                }
+            }
         }
     }
 
@@ -59,7 +67,7 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
             is DealsAndGiveawayScreenUiEvent.OnSearchBarTextChanged -> searchBarTextChanged(
                 event.text
             )
-            is DealsAndGiveawayScreenUiEvent.OnSearchBarTextSubmit -> onsearch()
+            is DealsAndGiveawayScreenUiEvent.OnSearchBarTextSubmit -> onSearch()
             is DealsAndGiveawayScreenUiEvent.OnToggleSearchBar -> toggleSearchBar(
                 event.isSearchBarVisible
             )
@@ -93,6 +101,31 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
             is DealsAndGiveawayScreenUiEvent.OnUpperPriceFilterChanged -> upperPriceFilterChanged(
                 event.upperPrice
             )
+
+            is DealsAndGiveawayScreenUiEvent.OnGiveawaysPlatformFilterChanged -> {
+                _dealsAndGiveawayScreenUiState.value =
+                    _dealsAndGiveawayScreenUiState.value.copy(
+                        giveawaysFilterPlatform = event.platform
+                    )
+            }
+            is DealsAndGiveawayScreenUiEvent.OnGiveawaysSortByFilterChanged -> {
+                _dealsAndGiveawayScreenUiState.value =
+                    _dealsAndGiveawayScreenUiState.value.copy(giveawaysFilterSortBy = event.sortBy)
+            }
+            is DealsAndGiveawayScreenUiEvent.OnGiveawaysTypeFilterChanged -> {
+                _dealsAndGiveawayScreenUiState.value =
+                    _dealsAndGiveawayScreenUiState.value.copy(giveawaysFilterType = event.type)
+            }
+            is DealsAndGiveawayScreenUiEvent.OnToggleGiveawaysBottomSheet -> {
+                _dealsAndGiveawayScreenUiState.value =
+                    _dealsAndGiveawayScreenUiState.value.copy(
+                        isGiveawaysBottomSheetVisible = event.isVisible
+                    )
+            }
+
+            DealsAndGiveawayScreenUiEvent.OnApplyGiveawaysFilters -> {
+                loadGiveaways()
+            }
         }
     }
 
@@ -126,7 +159,7 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
             _dealsAndGiveawayScreenUiState.value.copy(filterDesc = desc)
     }
 
-    private fun onsearch() {
+    private fun onSearch() {
         saveSearchHistory()
         _dealsAndGiveawayScreenUiState.value =
             _dealsAndGiveawayScreenUiState.value.copy(isDealsSearchBarLoading = true)
@@ -187,7 +220,11 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
 
     private fun loadGiveaways() {
         viewModelScope.launch {
-            gamePowerRepository.getGiveaways().collectLatest { result ->
+            gamePowerRepository.getGiveaways(
+                platform = _dealsAndGiveawayScreenUiState.value.giveawaysFilterPlatform,
+                sortBy = _dealsAndGiveawayScreenUiState.value.giveawaysFilterSortBy,
+                type = _dealsAndGiveawayScreenUiState.value.giveawaysFilterType
+            ).collectLatest { result ->
                 when (result) {
                     is ResultWrapper.Error -> {
                         _uiEffect.send(

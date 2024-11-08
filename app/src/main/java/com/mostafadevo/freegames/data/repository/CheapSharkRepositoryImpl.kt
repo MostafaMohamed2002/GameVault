@@ -4,6 +4,7 @@ import com.mostafadevo.freegames.data.remote.cheapshark.CheapSharkApi
 import com.mostafadevo.freegames.data.remote.cheapshark.dto.DealsDTOItem
 import com.mostafadevo.freegames.domain.repository.CheapSharkRepository
 import com.mostafadevo.freegames.utils.ResultWrapper
+import com.mostafadevo.freegames.utils.toInt
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,9 +32,9 @@ class CheapSharkRepositoryImpl @Inject constructor(
                     storeId = storeId,
                     lowerPrice = lowerPrice,
                     upperPrice = upperPrice,
-                    onSale = onSale,
+                    onSale = onSale?.toInt(),
                     sortBy = sortBy,
-                    desc = desc
+                    desc = desc?.toInt()
                 )
                 if (response.isSuccessful) {
                     emit(ResultWrapper.Success(response.body()!!))

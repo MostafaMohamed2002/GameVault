@@ -6,6 +6,7 @@ import com.mostafadevo.freegames.domain.model.ThemePreference
 import com.mostafadevo.freegames.domain.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -33,20 +34,20 @@ class SettingsScreenViewModel @Inject constructor(
     fun onEvent(event: SettingsScreenEvent) {
         when (event) {
             is SettingsScreenEvent.SaveThemePreference -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     saveThemePreference(event.themePreference)
                 }
             }
 
             is SettingsScreenEvent.SaveDynamicThemePreference -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     saveDynamicThemePreference(event.dynamicTheme)
                 }
             }
 
             SettingsScreenEvent.ClearSearchHistory -> clearSearchHistory()
             is SettingsScreenEvent.ChangeSearchHistoryLimit -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     dataStoreRepository.setSearchHistoryLimit(event.limit)
                 }
             }
@@ -61,13 +62,11 @@ class SettingsScreenViewModel @Inject constructor(
         }
     }
 
-    suspend fun saveThemePreference(themePreference: ThemePreference) {
+    private suspend fun saveThemePreference(themePreference: ThemePreference) {
         dataStoreRepository.saveThemePreference(themePreference)
     }
 
-    suspend fun saveDynamicThemePreference(isDynamic: Boolean) {
+    private suspend fun saveDynamicThemePreference(isDynamic: Boolean) {
         dataStoreRepository.saveDynamicThemePreference(isDynamic)
     }
-    // TODO: clear search history
-    // TODO: change search history limit
 }

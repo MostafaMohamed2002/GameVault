@@ -2,9 +2,9 @@ package com.mostafadevo.freegames.ui.screens.settings_screen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +23,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -93,8 +92,6 @@ fun SettingsScreen(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SearchHistoryLimitCounter(limit: Int, onLimitChange: (Int) -> Unit) {
-    val animatedLimit by animateIntAsState(targetValue = limit)
-
     Card(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
@@ -103,13 +100,12 @@ fun SearchHistoryLimitCounter(limit: Int, onLimitChange: (Int) -> Unit) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp).fillMaxWidth()
         ) {
             Text(
                 "Search History Limit :",
                 modifier = Modifier.padding(8.dp)
             )
-            Spacer(modifier = Modifier.weight(1f))
             IconButton(
                 onClick = {
                     onLimitChange(limit - 1)
@@ -121,9 +117,9 @@ fun SearchHistoryLimitCounter(limit: Int, onLimitChange: (Int) -> Unit) {
                 targetState = limit,
                 transitionSpec = {
                     if (targetState > initialState) {
-                        slideInVertically { -it } with slideOutVertically { it }
+                        slideInVertically { -it } togetherWith slideOutVertically { it }
                     } else {
-                        slideInVertically { it } with slideOutVertically { -it }
+                        slideInVertically { it } togetherWith slideOutVertically { -it }
                     }
                 }
             ) { count ->
@@ -193,7 +189,6 @@ fun ThemeSwitcherWithDialog(
     onDarkClick: () -> Unit = {},
     onSystemClick: () -> Unit = {}
 ) {
-    val isDialogOpen = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))

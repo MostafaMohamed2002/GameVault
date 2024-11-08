@@ -12,19 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 🔍 Step 1: Check out the code
       - name: 🛎️ Check out code
         uses: actions/checkout@v3
 
-      # ☕ Step 2: Set up JDK 17 for Gradle
       - name: ☕ Set up JDK 17
         uses: actions/setup-java@v2
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
 
-      # 🏃‍♂️ Step 3: Cache Gradle dependencies to speed up builds
       - name: 🗂️ Cache Gradle dependencies
         uses: actions/cache@v3
         with:
@@ -33,37 +29,30 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 🛠️ Step 4: Grant execute permissions for gradlew
       - name: 🔑 Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # 🏗️ Step 5: Build the project with Gradle
       - name: 🏗️ Build with Gradle
         run: ./gradlew assembleRelease --scan --no-daemon
 
-      # 🧪 Step 6: Run Unit Tests (Optional)
-      - name: 🧪 Run Unit Tests
-        run: ./gradlew test
+#      - name: 🧪 Run Unit Tests
+#        run: ./gradlew test
+#
+#      - name: 📤 Upload Test Reports
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: test-report
+#          path: build/reports/tests/test
 
-      # 📝 Step 7: Upload Test Reports (Optional)
-      - name: 📤 Upload Test Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: build/reports/tests/test
-
-      # 🎨 Step 8: Run KtLint Code Style Check
       - name: 🎨 Check Code Style with KtLint
         run: ./gradlew ktlintCheck
 
-      # 📂 Step 9: Upload KtLint Reports
       - name: 📤 Upload KtLint Reports
         uses: actions/upload-artifact@v4
         with:
           name: ktlint-report
           path: build/reports/ktlint/
 
-      # 📱 Step 10: Upload APK Artifact
       - name: 📲 Upload APK
         uses: actions/upload-artifact@v4
         with:

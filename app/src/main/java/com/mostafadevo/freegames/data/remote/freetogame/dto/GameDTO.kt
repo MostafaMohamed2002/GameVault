@@ -27,5 +27,4 @@ data class GameDTO(
     val thumbnail: String,
     @Json(name = "title")
     val title: String
-) {
-}
+)

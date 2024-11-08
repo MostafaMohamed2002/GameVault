@@ -1,12 +1,13 @@
 package com.mostafadevo.freegames.utils
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
@@ -33,13 +34,6 @@ suspend fun extractDominantColor(drawable: Drawable): Color {
         Color(dominantColor)
     }
 }
-suspend fun extractDominantColor2(drawable: Drawable): Palette.Swatch? {
-    val bitmap = (drawable as BitmapDrawable).bitmap.copy(Bitmap.Config.ARGB_8888, true)
-    return withContext(Dispatchers.Default) {
-        val palette = Palette.from(bitmap).generate()
-        palette.lightVibrantSwatch // Return the light vibrant swatch
-    }
-}
 
 suspend fun loadImage(context: Context, imageUrl: String): Drawable? {
     val imageLoader = ImageLoader(context)
@@ -53,16 +47,6 @@ suspend fun loadImage(context: Context, imageUrl: String): Drawable? {
     } else {
         null
     }
-}
-
-fun Int.toFormattedDate(): String {
-    val instant = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        Instant.ofEpochSecond(this.toLong())
-    } else {
-        TODO("VERSION.SDK_INT < O")
-    }
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.systemDefault())
-    return formatter.format(instant)
 }
 
 fun getContrastingTextColor(backgroundColor: Color): Color {
@@ -100,7 +84,14 @@ fun getTimeRemaining(endDateString: String): String {
 }
 
 fun openUrl(context: Context, url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-        context.startActivity(this)
-    }
+    val customTabsIntent = CustomTabsIntent.Builder()
+        .setDefaultColorSchemeParams(
+            CustomTabColorSchemeParams.Builder()
+                .build()
+        )
+        .build()
+
+    customTabsIntent.launchUrl(context, Uri.parse(url))
 }
+
+fun Boolean.toInt() = if (this) 1 else 0

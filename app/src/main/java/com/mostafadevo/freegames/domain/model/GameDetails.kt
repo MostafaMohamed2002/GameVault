@@ -14,8 +14,7 @@ data class GameDetails(
     val screenshots: List<Screenshot>,
     val shortDescription: String,
     val thumbnail: String
-) {
-}
+)
 data class Screenshot(
     val image: String
 )

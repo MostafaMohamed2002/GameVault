@@ -1,6 +1,5 @@
 package com.mostafadevo.freegames.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -13,11 +12,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -255,19 +251,13 @@ data class ColorFamily(
     val onColorContainer: Color
 )
 
-val unspecified_scheme = ColorFamily(
-    Color.Unspecified,
-    Color.Unspecified,
-    Color.Unspecified,
-    Color.Unspecified
-)
 
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -277,17 +267,7 @@ fun AppTheme(
 
         darkTheme -> darkScheme
         else -> lightScheme
-    }.switch()
-
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = Color.Transparent.toArgb()
-            window.navigationBarColor = Color.Transparent.toArgb()
-        }
     }
-
     MaterialTheme(
         colorScheme = colorScheme.switch(),
         typography = AppTypography,
@@ -306,19 +286,39 @@ private fun animateColor(targetValue: Color) =
 @Composable
 fun ColorScheme.switch() = copy(
     primary = animateColor(primary),
-    secondary = animateColor(secondary),
-    background = animateColor(background),
-    surface = animateColor(surface),
-    error = animateColor(error),
     onPrimary = animateColor(onPrimary),
-    onSecondary = animateColor(onSecondary),
-    onBackground = animateColor(onBackground),
-    onSurface = animateColor(onSurface),
-    onError = animateColor(onError),
     primaryContainer = animateColor(primaryContainer),
+    onPrimaryContainer = animateColor(onPrimaryContainer),
+    inversePrimary = animateColor(inversePrimary),
+    secondary = animateColor(secondary),
+    onSecondary = animateColor(onSecondary),
     secondaryContainer = animateColor(secondaryContainer),
+    onSecondaryContainer = animateColor(onSecondaryContainer),
     tertiary = animateColor(tertiary),
     onTertiary = animateColor(onTertiary),
     tertiaryContainer = animateColor(tertiaryContainer),
-    onTertiaryContainer = animateColor(onTertiaryContainer)
+    onTertiaryContainer = animateColor(onTertiaryContainer),
+    background = animateColor(background),
+    onBackground = animateColor(onBackground),
+    surface = animateColor(surface),
+    onSurface = animateColor(onSurface),
+    surfaceVariant = animateColor(surfaceVariant),
+    onSurfaceVariant = animateColor(onSurfaceVariant),
+    surfaceTint = animateColor(surfaceTint),
+    inverseSurface = animateColor(inverseSurface),
+    inverseOnSurface = animateColor(inverseOnSurface),
+    error = animateColor(error),
+    onError = animateColor(onError),
+    errorContainer = animateColor(errorContainer),
+    onErrorContainer = animateColor(onErrorContainer),
+    outline = animateColor(outline),
+    outlineVariant = animateColor(outlineVariant),
+    scrim = animateColor(scrim),
+    surfaceBright = animateColor(surfaceBright),
+    surfaceDim = animateColor(surfaceDim),
+    surfaceContainer = animateColor(surfaceContainer),
+    surfaceContainerHigh = animateColor(surfaceContainerHigh),
+    surfaceContainerHighest = animateColor(surfaceContainerHighest),
+    surfaceContainerLow = animateColor(surfaceContainerLow),
+    surfaceContainerLowest = animateColor(surfaceContainerLowest)
 )

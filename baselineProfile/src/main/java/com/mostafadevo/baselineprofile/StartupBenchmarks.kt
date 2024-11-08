@@ -8,6 +8,9 @@ import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,15 +64,56 @@ class StartupBenchmarks {
             },
             measureBlock = {
                 startActivityAndWait()
+                device.waitForIdle()
+                device.findObject(By.res("free_games_list")).apply {
+                    wait(Until.hasObject(By.res("free_games_list")), 20_000)
+                    setGestureMargin(device.displayWidth / 5)
+                    fling(Direction.DOWN)
+                    fling(Direction.DOWN)
+                }
+                device.waitForIdle()
 
-                // TODO Add interactions to wait for when your app is fully drawn.
-                // The app is fully drawn when Activity.reportFullyDrawn is called.
-                // For Jetpack Compose, you can use ReportDrawn, ReportDrawnWhen and ReportDrawnAfter
-                // from the AndroidX Activity library.
+                device.findObjects(By.res("FreeGameListItem")).apply {
+                    val index = (iteration?:0)% this.size
+                    this[index].click()
+                }
+                device.wait(Until.gone(By.res("FreeGameListItem")), 20_000)
+                device.wait(Until.hasObject(By.res("FreeGameDetailesScreen")), 20_000)
+                //scroll throught the details screen
+                device.findObject(By.res("FreeGameDetailesScreen")).apply {
+                    setGestureMargin(device.displayWidth / 5 )
+                    fling(Direction.DOWN)
+                }
+                device.pressBack()
 
-                // Check the UiAutomator documentation for more information on how to
-                // interact with the app.
-                // https://d.android.com/training/testing/other-components/ui-automator
+                //deals screen
+                device.findObject(By.text("Deals")).apply {
+                    click()
+                }
+                device.wait(Until.hasObject(By.res("deals_list")), 20_000)
+                device.findObject(By.res("deals_list")).apply {
+                    setGestureMargin(device.displayWidth / 5)
+                    fling(Direction.DOWN)
+                    fling(Direction.DOWN)
+                }
+                device.waitForIdle()
+                device.findObjects(By.res("DealsListItem")).apply {
+                    val index = (iteration?:0)% this.size
+                    this[index].click()
+                }
+                device.wait(Until.gone(By.res("DealsListItem")), 20_000)
+                device.pressBack()
+
+                //giveaways screen
+                device.findObject(By.text("Giveaways")).apply {
+                    click()
+                }
+                device.wait(Until.hasObject(By.res("giveaways_list")), 20_000)
+                device.findObject(By.res("giveaways_list")).apply {
+                    setGestureMargin(device.displayWidth / 5)
+                    fling(Direction.DOWN)
+                    fling(Direction.DOWN)
+                }
             }
         )
     }

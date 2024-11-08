@@ -13,8 +13,8 @@ interface CheapSharkApi {
         @Query("storeID") storeId: String? = null,
         @Query("lowerPrice") lowerPrice: Int? = null,
         @Query("upperPrice") upperPrice: Int? = null,
-        @Query("onSale") onSale: Boolean? = null,
+        @Query("onSale") onSale: Int? = null,
         @Query("sortBy") sortBy: String? = null,
-        @Query("desc") desc: Boolean? = null
+        @Query("desc") desc: Int? = null
     ): Response<List<DealsDTOItem>>
 }
