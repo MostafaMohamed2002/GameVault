@@ -1,7 +1,9 @@
 package com.mostafadevo.freegames.data.remote.freetogame.dto
 
+import android.support.annotation.Keep
 import com.squareup.moshi.Json
 
+@Keep
 data class GameDetailsDTO(
     @Json(name = "description")
     val description: String,
@@ -34,12 +36,16 @@ data class GameDetailsDTO(
     @Json(name = "title")
     val title: String
 )
+
+@Keep
 data class Screenshot(
     @Json(name = "id")
     val id: Int,
     @Json(name = "image")
     val image: String
 )
+
+@Keep
 data class MinimumSystemRequirements(
     @Json(name = "graphics")
     val graphics: String?,

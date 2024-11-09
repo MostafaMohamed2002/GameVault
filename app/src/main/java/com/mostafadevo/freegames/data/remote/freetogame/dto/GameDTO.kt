@@ -1,8 +1,11 @@
 package com.mostafadevo.freegames.data.remote.freetogame.dto
 
+import android.support.annotation.Keep
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+
+@Keep
 @JsonClass(generateAdapter = true)
 data class GameDTO(
     @Json(name = "developer")

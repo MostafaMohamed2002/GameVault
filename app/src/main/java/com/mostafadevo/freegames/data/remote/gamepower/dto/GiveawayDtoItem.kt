@@ -1,5 +1,8 @@
 package com.mostafadevo.freegames.data.remote.gamepower.dto
 
+import android.support.annotation.Keep
+
+@Keep
 data class GiveawayDtoItem(
     val description: String,
     val end_date: String,

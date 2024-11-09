@@ -1,7 +1,9 @@
 package com.mostafadevo.freegames.data.remote.cheapshark.dto
 
+import android.support.annotation.Keep
 import com.squareup.moshi.Json
 
+@Keep
 data class DealsDTOItem(
     @Json(name = "dealID")
     val dealID: String,

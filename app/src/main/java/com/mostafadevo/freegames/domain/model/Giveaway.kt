@@ -1,5 +1,8 @@
 package com.mostafadevo.freegames.domain.model
 
+import android.support.annotation.Keep
+
+@Keep
 data class Giveaway(
     val description: String,
     val end_date: String,
