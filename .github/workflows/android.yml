@@ -73,7 +73,3 @@ jobs:
             
             📂 Repository: ${{ github.repository }}
             🔗 See commit: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-            
-            ${{#if github.event.pull_request}}
-              🔗 Pull Request: https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}
-            ${{/if}}
