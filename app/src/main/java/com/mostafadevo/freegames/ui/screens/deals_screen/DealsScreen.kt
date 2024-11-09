@@ -769,7 +769,7 @@ fun DealsScreen(
                                     if (state.giveawaysFilterSortBy == it) {
                                         viewModel.onEvent(
                                             DealsAndGiveawayScreenUiEvent.OnGiveawaysSortByFilterChanged(
-                                                ""
+                                                null
                                             )
                                         )
                                     } else {
@@ -825,7 +825,7 @@ fun DealsScreen(
                                     if (state.giveawaysFilterType == it) {
                                         viewModel.onEvent(
                                             DealsAndGiveawayScreenUiEvent.OnGiveawaysTypeFilterChanged(
-                                                ""
+                                                null
                                             )
                                         )
                                     } else {
@@ -880,7 +880,7 @@ fun DealsScreen(
                                     if (state.giveawaysFilterPlatform == it) {
                                         viewModel.onEvent(
                                             DealsAndGiveawayScreenUiEvent.OnGiveawaysPlatformFilterChanged(
-                                                ""
+                                                null
                                             )
                                         )
                                     } else {

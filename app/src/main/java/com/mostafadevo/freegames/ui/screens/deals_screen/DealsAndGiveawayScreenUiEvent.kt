@@ -54,15 +54,15 @@ sealed class DealsAndGiveawayScreenUiEvent {
     ) : DealsAndGiveawayScreenUiEvent()
 
     data class OnGiveawaysSortByFilterChanged(
-        val sortBy: String
+        val sortBy: String?
     ) : DealsAndGiveawayScreenUiEvent()
 
     data class OnGiveawaysTypeFilterChanged(
-        val type: String
+        val type: String?
     ) : DealsAndGiveawayScreenUiEvent()
 
     data class OnGiveawaysPlatformFilterChanged(
-        val platform: String
+        val platform: String?
     ) : DealsAndGiveawayScreenUiEvent()
 
     data object OnApplyGiveawaysFilters : DealsAndGiveawayScreenUiEvent()
