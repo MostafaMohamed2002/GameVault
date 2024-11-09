@@ -1,5 +1,5 @@
-# Game Vault 🎮 'Work in Progress 🔨🚧'
-Your ultimate gaming companion! GameVault provides instant access to the latest free games 🎉 and exclusive game deals 🤑.
+# Game Vault 🎮
+Your ultimate gaming companion! GameVault provides instant access to the latest free games 🎉 and exclusive game deals 🤑, Ability to search through Deals , support Filtering and Dynamic color Scheme 👌
 
 
 | free games screen | free games filtering | free game filtering 2 |
@@ -31,20 +31,21 @@ Your ultimate gaming companion! GameVault provides instant access to the latest 
 |light dynamic|dark dynamic|
 |--|--|
 |![Screenshot_1731186836](https://github.com/user-attachments/assets/3bb64a73-899c-4b3c-ba02-5d18ef9fd098)|![Screenshot_1731186845](https://github.com/user-attachments/assets/097f76f8-0570-4cba-b0b9-811f30b1ef86)|
-## Features
-
-- **Modern UI**: Built using Jetpack Compose, GameVault offers a smooth UI that adheres to modern Android design guidelines.
-
-- **Game Details**: Get detailed information about each game, including descriptions, screenshots, and system requirements.
-- **Offline Support**: Cached game data ensures users can browse even when offline.
-
 
 ## Tech Stack
 
 - **Kotlin**: The app is written entirely in Kotlin, embracing its expressive, concise syntax and null safety.
 - **Jetpack Compose**: Leveraging Google's modern declarative UI toolkit, ensuring a seamless and reactive user experience.
-- **MVVM Architecture**: The app follows the Model-View-ViewModel (MVVM) architecture pattern for clear separation of concerns.
+- **MVI Architecture**: The app follows the Model-View-Intent (MVI) architecture pattern for clear separation of concerns.
 - **Room Database**: Local data is stored using Room, providing an offline-first experience and local caching.
 - **Retrofit**: For network requests and interacting with external APIs.
 - **Coroutines and Flow**: Asynchronous programming is handled using Kotlin Coroutines, with Flow streams providing real-time updates.
 - **Hilt**: Dependency injection is managed with Hilt for better scalability and testability.
+- **Palette**: Image Color Extraction
+- **DataStore**: lightweight storage for preferences
+- **Retrofit**: For making API Calls
+- **Moshi**: Json Parsing
+- **OkHttp-Logging-Interceptor**: Http request Logging
+- **Coil**: Image Loading and Caching
+- **BaseLineProfile**: improve code execution speed by about 30% from the first launch by avoiding interpretation and just-in-time (JIT) compilation steps for included code paths.
+
