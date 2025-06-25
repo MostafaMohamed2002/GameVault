@@ -1,19 +1,27 @@
 package com.mostafadevo.freegames.ui.theme
 
 import android.os.Build
+import android.view.View
+import android.view.Window
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowInsetsControllerCompat
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -250,7 +258,7 @@ data class ColorFamily(
     val colorContainer: Color,
     val onColorContainer: Color
 )
-
+val LocalColorTheme = staticCompositionLocalOf<ColorScheme> { lightScheme }
 
 @Composable
 fun AppTheme(
@@ -268,6 +276,17 @@ fun AppTheme(
         darkTheme -> darkScheme
         else -> lightScheme
     }
+
+    // Update status bar appearance according to theme
+    UpdateStatusBarIconsForTheme(darkTheme)
+    val theme = if (darkTheme) darkColorScheme() else lightColorScheme()
+    CompositionLocalProvider(
+        LocalColorTheme provides theme,
+        LocalTextStyle provides LocalTextStyle.current
+    ) {
+        content()
+    }
+
     MaterialTheme(
         colorScheme = colorScheme.switch(),
         typography = AppTypography,
@@ -322,3 +341,13 @@ fun ColorScheme.switch() = copy(
     surfaceContainerLow = animateColor(surfaceContainerLow),
     surfaceContainerLowest = animateColor(surfaceContainerLowest)
 )
+@Composable
+private fun UpdateStatusBarIconsForTheme(darkTheme: Boolean) {
+    val isDarkIcons = !darkTheme
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        val window = (view.context as? ComponentActivity)?.window ?: return
+        val controller = WindowInsetsControllerCompat(window, view)
+        controller.isAppearanceLightStatusBars = isDarkIcons
+    }
+}
