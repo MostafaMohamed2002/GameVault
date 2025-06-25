@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.io.FileInputStream
 import java.io.IOException
@@ -184,6 +185,7 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.material)
+    implementation (libs.androidx.core.ktx.v1120)
 }
 ksp {
     arg("dagger.incremental", "true")
