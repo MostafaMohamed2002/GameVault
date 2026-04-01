@@ -67,3 +67,7 @@ GameVault uses Firebase Analytics for product insights.
 
 Tracked events include free games views/clicks, deals and giveaway clicks, filters, detail views, and settings changes.
 
+## Documentation
+
+For AI agent setup and contribution guidance, see [AGENT.md](AGENT.md).
+
