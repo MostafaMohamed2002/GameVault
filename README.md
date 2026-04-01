@@ -1,6 +1,6 @@
 # Game Vault 🎮
 Your ultimate gaming companion! GameVault provides instant access to the latest free games 🎉 and exclusive game deals 🤑, Ability to search through Deals , support Filtering and Dynamic color Scheme 👌
-
+[![Get it on Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.mostafadevo.freegames)
 ## Demo
 
 
