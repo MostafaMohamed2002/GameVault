@@ -83,6 +83,7 @@ androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomato
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+# Firebase dependencies are declared directly in app/build.gradle.kts using the BOM
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

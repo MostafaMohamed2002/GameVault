@@ -112,8 +112,9 @@ fun FreeGamesScreen(
                         FreeGameListItem(
                             modifier = Modifier.animateItem().testTag("free_game"),
                             game = game,
-                            onClickListener = {
-                                navController.navigate("/details/$it")
+                            onClickListener = { id ->
+                                freeGamesScreenViewModel.onEvent(FreeGamesScreenEvents.GameClicked(id, game.title, game.platform))
+                                navController.navigate("/details/$id")
                             }
                         )
                     }

@@ -182,6 +182,13 @@ fun FreeGameDetailesScreen(
                                 )
                                 .weight(1f)
                                 .clickable {
+                                    // log external link opened
+                                    val domain = try {
+                                        java.net.URI(state.game.freetogameProfileUrl).host ?: ""
+                                    } catch (e: Exception) {
+                                        ""
+                                    }
+                                    // Log via viewModel or analytics - using viewModel would require injection; call open util then later fire event from viewModel if needed
                                     openUrl(
                                         context = context,
                                         url = state.game.freetogameProfileUrl

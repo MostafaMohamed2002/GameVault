@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class FreeGamesScreenViewModel @Inject constructor(
-    private val repository: FreeGamesRepository
+    private val repository: FreeGamesRepository,
+    private val analytics: com.mostafadevo.freegames.analytics.GameVaultAnalytics
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FreeGamesScreenUiState())
     val uiState: StateFlow<FreeGamesScreenUiState> = _uiState.asStateFlow()
@@ -83,12 +84,15 @@ class FreeGamesScreenViewModel @Inject constructor(
         when (event) {
             is FreeGamesScreenEvents.onCategorySelected -> {
                 _uiState.value = _uiState.value.copy(category = event.category)
+                analytics.logFreeGamesFilterApplied(_uiState.value.platform, event.category, _uiState.value.sortBy)
             }
             is FreeGamesScreenEvents.onPlatformSelected -> {
                 _uiState.value = _uiState.value.copy(platform = event.platform)
+                analytics.logFreeGamesFilterApplied(event.platform, _uiState.value.category, _uiState.value.sortBy)
             }
             is FreeGamesScreenEvents.onSortBySelected -> {
                 _uiState.value = _uiState.value.copy(sortBy = event.sortBy)
+                analytics.logFreeGamesFilterApplied(_uiState.value.platform, _uiState.value.category, event.sortBy)
             }
 
             FreeGamesScreenEvents.onSearchWithFilters -> {
@@ -97,6 +101,11 @@ class FreeGamesScreenViewModel @Inject constructor(
                     _uiState.value.category,
                     _uiState.value.sortBy
                 )
+                analytics.logFreeGamesScreenViewed()
+            }
+            is FreeGamesScreenEvents.GameClicked -> {
+                // Log game click
+                analytics.logFreeGameCardClicked(event.gameId, event.gameTitle, event.platform)
             }
         }
     }

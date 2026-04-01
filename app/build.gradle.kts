@@ -10,6 +10,7 @@ plugins {
     id("com.google.devtools.ksp") // ksp
     alias(libs.plugins.compose.compiler) // compose compiler
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
     alias(libs.plugins.baselineprofile) // hilt
     id("org.jlleitschuh.gradle.ktlint") // ktlint
 }
@@ -186,6 +187,10 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.material)
     implementation (libs.androidx.core.ktx.v1120)
+    // Firebase Analytics
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    // Use explicit version fallback to avoid BOM resolution issues in local builds
+    implementation("com.google.firebase:firebase-analytics-ktx:21.4.0")
 }
 ksp {
     arg("dagger.incremental", "true")

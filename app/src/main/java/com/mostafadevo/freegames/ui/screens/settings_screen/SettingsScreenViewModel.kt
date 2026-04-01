@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    private val analytics: com.mostafadevo.freegames.analytics.GameVaultAnalytics
 ) : ViewModel() {
     val themeState: StateFlow<ThemePreference> = dataStoreRepository.getThemePreference().stateIn(
         scope = viewModelScope,
@@ -36,12 +37,15 @@ class SettingsScreenViewModel @Inject constructor(
             is SettingsScreenEvent.SaveThemePreference -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     saveThemePreference(event.themePreference)
+                    // log theme change
+                    analytics.logThemeChanged(event.themePreference.name.lowercase())
                 }
             }
 
             is SettingsScreenEvent.SaveDynamicThemePreference -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     saveDynamicThemePreference(event.dynamicTheme)
+                    analytics.logDynamicColorToggled(event.dynamicTheme)
                 }
             }
 

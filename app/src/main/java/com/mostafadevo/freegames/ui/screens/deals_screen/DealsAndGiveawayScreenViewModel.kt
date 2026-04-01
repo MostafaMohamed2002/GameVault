@@ -23,7 +23,8 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
     private val cheapSharkRepository: CheapSharkRepository,
     private val datastore: DataStoreRepository,
     private val gamePowerRepository: GamePowerRepository,
-    private val datastoreRepo: DataStoreRepository
+    private val datastoreRepo: DataStoreRepository,
+    private val analytics: com.mostafadevo.freegames.analytics.GameVaultAnalytics? = null
 ) : ViewModel() {
 
     private val _dealsAndGiveawayScreenUiState = MutableStateFlow(DealsAndGiveawayScreenUiState())
