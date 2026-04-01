@@ -9,6 +9,10 @@ import javax.inject.Singleton
 class FirebaseAnalyticsImpl @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics
 ) : GameVaultAnalytics {
+    override fun setAnalyticsCollectionEnabled(enabled: Boolean) {
+        firebaseAnalytics.setAnalyticsCollectionEnabled(enabled)
+    }
+
     override fun logEvent(name: String, params: Bundle?) {
         firebaseAnalytics.logEvent(name, params)
     }

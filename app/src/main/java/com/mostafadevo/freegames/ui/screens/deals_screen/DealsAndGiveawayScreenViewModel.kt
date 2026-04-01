@@ -83,7 +83,14 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
                 event.isVisible
             )
             DealsAndGiveawayScreenUiEvent.OnClearSearchBarDeals -> clearSearchBarListOfDeals()
-            DealsAndGiveawayScreenUiEvent.OnApplyDealsFilters -> loadDeals()
+            DealsAndGiveawayScreenUiEvent.OnApplyDealsFilters -> {
+                analytics?.logDealsFilterApplied(
+                    getDealStoreName(_dealsAndGiveawayScreenUiState.value.filterStoreId),
+                    null,
+                    _dealsAndGiveawayScreenUiState.value.filterSortBy
+                )
+                loadDeals()
+            }
             is DealsAndGiveawayScreenUiEvent.OnDescFilterChanged -> descendingFilterChnaged(
                 event.desc
             )
@@ -161,6 +168,7 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
     }
 
     private fun onSearch() {
+        analytics?.logDealsSearchPerformed(_dealsAndGiveawayScreenUiState.value.dealsSearchBarText.length)
         saveSearchHistory()
         _dealsAndGiveawayScreenUiState.value =
             _dealsAndGiveawayScreenUiState.value.copy(isDealsSearchBarLoading = true)
@@ -221,6 +229,7 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
 
     private fun loadGiveaways() {
         viewModelScope.launch {
+            analytics?.logDealsScreenViewed("giveaways")
             gamePowerRepository.getGiveaways(
                 platform = _dealsAndGiveawayScreenUiState.value.giveawaysFilterPlatform,
                 sortBy = _dealsAndGiveawayScreenUiState.value.giveawaysFilterSortBy,
@@ -259,6 +268,7 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
 
     private fun loadDeals() {
         viewModelScope.launch {
+            analytics?.logDealsScreenViewed("deals")
             cheapSharkRepository.getDeals(
                 storeId = _dealsAndGiveawayScreenUiState.value.filterStoreId,
                 lowerPrice = _dealsAndGiveawayScreenUiState.value.filterLowerPrice?.toInt(),
@@ -297,6 +307,59 @@ class DealsAndGiveawayScreenViewModel @Inject constructor(
     private fun changeSelectedTab(tabIndex: Int) {
         _dealsAndGiveawayScreenUiState.value =
             _dealsAndGiveawayScreenUiState.value.copy(selectedTab = tabIndex)
+        analytics?.logDealsScreenViewed(if (tabIndex == 0) "deals" else "giveaways")
+    }
+
+    fun onDealClicked(dealId: String, title: String, salePrice: String, normalPrice: String) {
+        val discount = normalPrice.substringBefore("$").toDoubleOrNull()?.let { normal ->
+            salePrice.substringBefore("$").toDoubleOrNull()?.let { sale ->
+                if (normal > 0) (((normal - sale) / normal) * 100).toInt() else null
+            }
+        }
+        analytics?.logDealCardClicked(title, "unknown", discount, salePrice.substringBefore("$").toDoubleOrNull())
+    }
+
+    fun onGiveawayClicked(title: String, platform: String, endDate: String, url: String) {
+        analytics?.logGiveawayCardClicked(title, platform, null)
+    }
+
+    fun getDealStoreName(storeId: String?): String = when (storeId) {
+        "1" -> "Steam"
+        "2" -> "GamersGate"
+        "3" -> "GreenManGaming"
+        "4" -> "Amazon"
+        "5" -> "GameStop"
+        "6" -> "Direct2Drive"
+        "7" -> "GOG"
+        "8" -> "Origin"
+        "9" -> "Get Games"
+        "10" -> "Shiny Loot"
+        "11" -> "Humble Store"
+        "12" -> "Desura"
+        "13" -> "Uplay"
+        "14" -> "IndieGameStand"
+        "15" -> "Fanatical"
+        "16" -> "Gamesrocket"
+        "17" -> "Games Republic"
+        "18" -> "SilaGames"
+        "19" -> "Playfield"
+        "20" -> "ImperialGames"
+        "21" -> "WinGameStore"
+        "22" -> "FunStockDigital"
+        "23" -> "GameBillet"
+        "24" -> "Voidu"
+        "25" -> "Epic Games Store"
+        "26" -> "Razer Game Store"
+        "27" -> "Gamesplanet"
+        "28" -> "Gamesload"
+        "29" -> "2Game"
+        "30" -> "IndieGala"
+        "31" -> "Blizzard Shop"
+        "32" -> "AllYouPlay"
+        "33" -> "DLGamer"
+        "34" -> "Noctre"
+        "35" -> "DreamGame"
+        else -> ""
     }
 
     private fun saveSearchHistory() {

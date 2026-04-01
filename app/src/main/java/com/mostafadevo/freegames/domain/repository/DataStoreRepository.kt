@@ -10,6 +10,8 @@ interface DataStoreRepository {
     fun getThemePreference(): Flow<ThemePreference>
     fun getDynamicThemePereference(): Flow<Boolean>
     suspend fun saveDynamicThemePreference(dynamicTheme: Boolean)
+    fun getAnalyticsCollectionEnabled(): Flow<Boolean>
+    suspend fun saveAnalyticsCollectionEnabled(enabled: Boolean)
     suspend fun clearSearchHistory()
     suspend fun setSearchHistoryLimit(limit: Int)
     fun getSearchHistoryLimit(): Flow<Int>

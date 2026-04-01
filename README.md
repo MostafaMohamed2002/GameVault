@@ -56,3 +56,14 @@ https://github.com/user-attachments/assets/f20bf4fa-2653-4093-b865-78917d926aaf
 - **Coil**: Image Loading and Caching
 - **BaseLineProfile**: improve code execution speed by about 30% from the first launch by avoiding interpretation and just-in-time (JIT) compilation steps for included code paths.
 
+## Analytics
+
+GameVault uses Firebase Analytics for product insights.
+
+- No PII is logged.
+- Search queries are never logged; only query length is tracked.
+- External links are recorded as domain-only values.
+- Analytics can be disabled from Settings.
+
+Tracked events include free games views/clicks, deals and giveaway clicks, filters, detail views, and settings changes.
+

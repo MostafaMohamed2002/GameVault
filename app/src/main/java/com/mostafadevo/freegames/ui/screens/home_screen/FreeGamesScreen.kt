@@ -64,6 +64,10 @@ fun FreeGamesScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val state by freeGamesScreenViewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        freeGamesScreenViewModel.onEvent(FreeGamesScreenEvents.ScreenViewed)
+    }
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true // this fixes the issue of the sheet not expanding fully
     )

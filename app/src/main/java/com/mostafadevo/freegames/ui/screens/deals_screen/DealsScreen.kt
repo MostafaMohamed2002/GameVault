@@ -97,6 +97,16 @@ fun DealsScreen(
     )
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    LaunchedEffect(state.selectedTab) {
+        viewModel.onEvent(
+            if (state.selectedTab == 0) {
+                DealsAndGiveawayScreenUiEvent.OnLoadDeals
+            } else {
+                DealsAndGiveawayScreenUiEvent.OnLoadGiveaways
+            }
+        )
+    }
+
     LaunchedEffect(state.dealsSearchBarText) {
         if (state.dealsSearchBarText.isEmpty() && state.dealsSearchBardata?.isNotEmpty() == true) {
             viewModel.onEvent(DealsAndGiveawayScreenUiEvent.OnClearSearchBarDeals) // clear list of deals inside search bar
@@ -346,6 +356,12 @@ fun DealsScreen(
                         DealsListItem(
                             modifier = Modifier.animateItem(),
                             onClickListener = {
+                                viewModel.onDealClicked(
+                                    deal.dealID,
+                                    deal.title,
+                                    deal.salePrice,
+                                    deal.normalPrice
+                                )
                                 openUrl(
                                     context,
                                     "https://www.cheapshark.com/redirect?dealID=${deal.dealID}"
@@ -384,11 +400,17 @@ fun DealsScreen(
                 modifier = Modifier.testTag("giveaways_list")
             ) {
                 items(state.giveaways!!, key = { it.id }) { giveaway ->
-                    GiveawayListItem(
-                        modifier = Modifier.animateItem(),
-                        onClickListener = {
-                            openUrl(context, giveaway.open_giveaway_url)
-                        },
+                        GiveawayListItem(
+                            modifier = Modifier.animateItem(),
+                            onClickListener = {
+                                viewModel.onGiveawayClicked(
+                                    giveaway.title,
+                                    giveaway.platforms,
+                                    giveaway.end_date,
+                                    giveaway.open_giveaway_url
+                                )
+                                openUrl(context, giveaway.open_giveaway_url)
+                            },
                         imageLink = giveaway.thumbnail,
                         title = giveaway.title,
                         shortDescription = giveaway.description,

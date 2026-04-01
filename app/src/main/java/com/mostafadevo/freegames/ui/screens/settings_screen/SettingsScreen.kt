@@ -28,20 +28,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.mostafadevo.freegames.domain.model.ThemePreference
 
 @Composable
 fun SettingsScreen(
+    navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     val themePreference = viewModel.themeState.collectAsStateWithLifecycle()
     val dynamicTheme = viewModel.dynamicThemeState.collectAsStateWithLifecycle()
+    val analyticsEnabled = viewModel.analyticsCollectionEnabledState.collectAsStateWithLifecycle()
     val searchHistoryLimit = viewModel.searchHistoryLimitState.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -72,6 +77,19 @@ fun SettingsScreen(
                     SettingsScreenEvent.SaveDynamicThemePreference(!dynamicTheme.value)
                 )
             }
+        )
+        Spacer(modifier = Modifier.padding(8.dp))
+        AnalyticsOptOutSwitcher(
+            checked = analyticsEnabled.value,
+            onClick = {
+                viewModel.onEvent(
+                    SettingsScreenEvent.SaveAnalyticsCollectionPreference(!analyticsEnabled.value)
+                )
+            }
+        )
+        Spacer(modifier = Modifier.padding(8.dp))
+        PrivacyPolicyLink(
+            onClick = { navController.navigate("/privacy-policy") }
         )
         Spacer(modifier = Modifier.padding(8.dp))
         ClearSearchHistoryButton(
@@ -266,6 +284,47 @@ fun DynamicColorsSwitcher(
                     onClick()
                 }
             )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun AnalyticsOptOutSwitcher(
+    checked: Boolean = true,
+    onClick: () -> Unit = {}
+) {
+    Card {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text("Analytics Enabled")
+            Spacer(modifier = Modifier.weight(1f))
+            Switch(
+                checked = checked,
+                onCheckedChange = { onClick() }
+            )
+        }
+    }
+}
+
+@Composable
+fun PrivacyPolicyLink(onClick: () -> Unit) {
+    Card {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .clickable { onClick() },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Privacy Policy")
+            Text("Open", color = MaterialTheme.colorScheme.primary)
         }
     }
 }

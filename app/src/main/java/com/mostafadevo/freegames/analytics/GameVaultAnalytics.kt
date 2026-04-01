@@ -3,6 +3,7 @@ package com.mostafadevo.freegames.analytics
 import android.os.Bundle
 
 interface GameVaultAnalytics {
+    fun setAnalyticsCollectionEnabled(enabled: Boolean)
     fun logEvent(name: String, params: Bundle? = null)
     fun logFreeGamesScreenViewed()
     fun logFreeGameCardClicked(gameId: Int, gameTitle: String, platform: String)

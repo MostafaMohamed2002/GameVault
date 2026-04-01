@@ -101,8 +101,8 @@ class FreeGamesScreenViewModel @Inject constructor(
                     _uiState.value.category,
                     _uiState.value.sortBy
                 )
-                analytics.logFreeGamesScreenViewed()
             }
+            FreeGamesScreenEvents.ScreenViewed -> analytics.logFreeGamesScreenViewed()
             is FreeGamesScreenEvents.GameClicked -> {
                 // Log game click
                 analytics.logFreeGameCardClicked(event.gameId, event.gameTitle, event.platform)

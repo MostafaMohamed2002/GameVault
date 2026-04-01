@@ -115,4 +115,23 @@ class DataStoreRepositoryImpl @Inject constructor(
             preferences[booleanPreferencesKey("dynamic_theme_preference_key")] = dynamicTheme
         }
     }
+
+    override fun getAnalyticsCollectionEnabled(): Flow<Boolean> {
+        return dataStore.data.catch { exception ->
+            if (exception is Exception) {
+                Timber.e(exception)
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }.map { preferences ->
+            preferences[booleanPreferencesKey("analytics_collection_enabled_key")] ?: true
+        }
+    }
+
+    override suspend fun saveAnalyticsCollectionEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey("analytics_collection_enabled_key")] = enabled
+        }
+    }
 }

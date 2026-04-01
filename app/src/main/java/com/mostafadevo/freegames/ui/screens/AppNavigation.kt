@@ -45,6 +45,7 @@ import com.mostafadevo.freegames.ui.screens.detailes_screen.FreeGameDetailesScre
 import com.mostafadevo.freegames.ui.screens.detailes_screen.FreeGameDetailesViewModel
 import com.mostafadevo.freegames.ui.screens.home_screen.FreeGamesScreen
 import com.mostafadevo.freegames.ui.screens.home_screen.FreeGamesScreenViewModel
+import com.mostafadevo.freegames.ui.screens.privacy_policy.PrivacyPolicyScreen
 import com.mostafadevo.freegames.ui.screens.settings_screen.SettingsScreen
 
 @Composable
@@ -108,7 +109,11 @@ fun NavHostScreen() {
             }
             composable(route = "/settings") {
                 bottomBarVisibility = true
-                SettingsScreen()
+                SettingsScreen(navController = navController)
+            }
+            composable(route = "/privacy-policy") {
+                bottomBarVisibility = false
+                PrivacyPolicyScreen()
             }
         }
     }

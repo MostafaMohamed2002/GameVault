@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
@@ -32,6 +33,11 @@ class SettingsScreenViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(),
         initialValue = 5
     )
+    val analyticsCollectionEnabledState: StateFlow<Boolean> = dataStoreRepository.getAnalyticsCollectionEnabled().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = true
+    )
     fun onEvent(event: SettingsScreenEvent) {
         when (event) {
             is SettingsScreenEvent.SaveThemePreference -> {
@@ -46,6 +52,13 @@ class SettingsScreenViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     saveDynamicThemePreference(event.dynamicTheme)
                     analytics.logDynamicColorToggled(event.dynamicTheme)
+                }
+            }
+
+            is SettingsScreenEvent.SaveAnalyticsCollectionPreference -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    dataStoreRepository.saveAnalyticsCollectionEnabled(event.enabled)
+                    analytics.setAnalyticsCollectionEnabled(event.enabled)
                 }
             }
 
@@ -73,4 +86,5 @@ class SettingsScreenViewModel @Inject constructor(
     private suspend fun saveDynamicThemePreference(isDynamic: Boolean) {
         dataStoreRepository.saveDynamicThemePreference(isDynamic)
     }
+
 }
